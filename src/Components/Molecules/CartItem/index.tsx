@@ -9,7 +9,6 @@ export default function CartItem({
   quantity,
   stock,
   unit,
-  unitValue,
   onQuantityChange,
   onRemove,
 }: CartItemProps) {
@@ -23,9 +22,7 @@ export default function CartItem({
         />
         <div>
           <p className="font-medium">{name}</p>
-          <p>
-            {unitValue} {unit}
-          </p>
+          <p>{unit}</p>
           <p className="text-sm text-gray-500">
             Rp {price.toLocaleString("id-ID")}
           </p>
