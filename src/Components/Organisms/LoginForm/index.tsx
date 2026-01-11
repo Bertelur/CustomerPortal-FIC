@@ -1,0 +1,52 @@
+import { useState } from "react";
+import InputField from "../../Molecules/InputField";
+import { Button } from "../../Atoms/Button";
+import axios from "axios";
+
+const LoginForm = () => {
+  const [form, setForm] = useState({ email: "", password: "" });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setForm({ ...form, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    try {
+      const response = await axios.post(
+        "http://localhost:3000/api/users/login",
+        form
+      );
+      console.log("RESPONSE:", response.data);
+    } catch (error: any) {
+      console.error("LOGIN ERROR:", error.response?.data || error.message);
+    }
+  };
+
+  return (
+    <form
+      onSubmit={handleSubmit}
+      className="space-y-4 flex flex-col items-center justify-center h-[90vh]"
+    >
+      <InputField
+        label="Email"
+        name="email"
+        type="email"
+        onChange={handleChange}
+      />
+      <InputField
+        label="Password"
+        name="password"
+        type="password"
+        onChange={handleChange}
+      />
+
+      <Button type="submit" className="w-80">
+        Login
+      </Button>
+    </form>
+  );
+};
+
+export default LoginForm;
