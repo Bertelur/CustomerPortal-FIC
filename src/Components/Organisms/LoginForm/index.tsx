@@ -2,9 +2,11 @@ import { useState } from "react";
 import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
+import { useNavigate } from "react-router-dom";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setForm({ ...form, [e.target.name]: e.target.value });
@@ -16,9 +18,11 @@ const LoginForm = () => {
     try {
       const response = await axios.post(
         "http://localhost:3000/api/users/login",
-        form
+        form,
+        { withCredentials: true }
       );
-      console.log("RESPONSE:", response.data);
+      localStorage.setItem("accessToken", response.data.accessToken);
+      navigate("/");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("LOGIN ERROR:", error.response?.data || error.message);

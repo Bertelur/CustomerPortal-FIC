@@ -1,11 +1,15 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import { TbShoppingCartFilled, TbUser } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState<string | null>("");
 
+  useEffect(() => {
+    const token = localStorage.getItem("accessToken");
+    setIsLogin(token);
+  }, []);
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? "text-orange-500 font-semibold"
@@ -34,13 +38,18 @@ export default function Navbar() {
               <NavLink to="/cart" className={linkClass}>
                 <TbShoppingCartFilled size={24} />
               </NavLink>
-              <NavLink to="/profile">
+              <NavLink to="/profile" className={linkClass}>
                 <TbUser size={24} />
               </NavLink>
             </div>
           ) : (
-            <div>
-              <Button onClick={() => setIsLogin(!isLogin)}>Login</Button>
+            <div className="flex gap-4">
+              <NavLink to={`/login`}>
+                <Button>Login</Button>
+              </NavLink>
+              <NavLink to={`/register`}>
+                <Button>Register</Button>
+              </NavLink>
             </div>
           )}
         </nav>
@@ -60,7 +69,8 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="md:hidden flex items-center gap-4">
-            <Button onClick={() => setIsLogin(!isLogin)}></Button>
+            <NavLink to={`/login`}>Login</NavLink>
+            <NavLink to={`/register`}>Register</NavLink>
           </div>
         )}
       </div>
