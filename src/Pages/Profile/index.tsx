@@ -1,4 +1,3 @@
-import React from "react";
 import InputField from "../../Components/Molecules/InputField";
 import { Button } from "../../Components/Atoms/Button";
 
