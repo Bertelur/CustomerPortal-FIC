@@ -7,19 +7,18 @@ export const productData: ProductProps[] = [
     image: "https://images.unsplash.com/photo-1587486913049-53fc88980cfc",
     stock: 500,
     units: [
-      { unit: 'Tray', unitValue: 1, price: 66000 },
-      { unit: 'Carton', unitValue: 12, price: 792000 }, 
-    ] ,
-  }, 
-  { 
+      { unit: "Tray", unitValue: 1, price: 66000 },
+      { unit: "Carton", unitValue: 12, price: 792000 },
+    ],
+  },
+  {
     id: 2,
     name: "Telur Omega 3",
     image: "https://images.unsplash.com/photo-1587486913049-53fc88980cfc",
     stock: 300,
     units: [
-      { unit: 'Tray', unitValue: 1, price: 69950 },
-      { unit: 'Carton', unitValue: 12, price: 839500 }, 
-    ]
+      { unit: "Tray", unitValue: 1, price: 69950 },
+      { unit: "Carton", unitValue: 12, price: 839500 },
+    ],
   },
-  
 ];

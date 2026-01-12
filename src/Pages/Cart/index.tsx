@@ -1,11 +1,10 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import CartList from "../../Components/Organisms/CartList";
 import CartSummary from "../../Components/Organisms/CartSummary";
 import EmptyCart from "../../Components/Organisms/EmptyCart";
 import type { CartItem } from "../../Components/Organisms/CartList/CartList.types";
 
 export default function CartPage() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const CART_KEY = "cart";
 
   const getCart = (): CartItem[] => {
@@ -13,9 +12,7 @@ export default function CartPage() {
     return data ? JSON.parse(data) : [];
   };
 
-  useEffect(() => {
-    setCartItems(getCart());
-  }, []);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => getCart());
   const updateQuantity = (id: number, value: number) => {
     setCartItems((prev) => {
       const updated = prev.map((item) =>

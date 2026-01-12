@@ -19,8 +19,14 @@ const LoginForm = () => {
         form
       );
       console.log("RESPONSE:", response.data);
-    } catch (error: any) {
-      console.error("LOGIN ERROR:", error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("LOGIN ERROR:", error.response?.data || error.message);
+      } else if (error instanceof Error) {
+        console.error("LOGIN ERROR:", error.message);
+      } else {
+        console.error("LOGIN ERROR: Unknown error occurred");
+      }
     }
   };
 

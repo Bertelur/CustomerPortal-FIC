@@ -35,11 +35,13 @@ export default function CartSummary({
       }
       localStorage.removeItem("cart");
       window.location.href = data.invoice_url;
-    } catch (err: any) {
+    } catch (err: unknown) {
       console.error("Checkout error:", err);
 
       if (axios.isAxiosError(err)) {
         alert(err.response?.data?.message || "Gagal membuat invoice");
+      } else if (err instanceof Error) {
+        alert(err.message);
       } else {
         alert("Terjadi kesalahan");
       }

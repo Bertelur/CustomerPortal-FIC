@@ -7,10 +7,7 @@
   "compilerOptions": {
     "moduleResolution": "bundler",
     "paths": {
-      "@/*": [
-        "./src/Components/Atoms"
-      ]
+      "@/*": ["./src/Components/Atoms"]
     }
-    
   }
 }

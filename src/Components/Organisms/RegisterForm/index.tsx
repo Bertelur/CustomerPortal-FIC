@@ -28,8 +28,14 @@ const RegisterForm = () => {
         }
       );
       console.log("RESPONSE:", response.data);
-    } catch (error: any) {
-      console.error("LOGIN ERROR:", error.response?.data || error.message);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.error("REGISTER ERROR:", error.response?.data || error.message);
+      } else if (error instanceof Error) {
+        console.error("REGISTER ERROR:", error.message);
+      } else {
+        console.error("REGISTER ERROR: Unknown error occurred");
+      }
     }
   };
 

@@ -1,9 +1,18 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
 import { TbClock, TbX, TbPackage, TbChecklist } from "react-icons/tb";
+import type { IconType } from "react-icons";
 import { Button } from "../../Components/Atoms/Button";
 import StatusTransaction from "../../Components/Molecules/StatusTransaction";
 type TransactionStatus = "PENDING" | "PAID" | "SETTLED" | "EXPIRED";
+
+type StatusConfig = {
+  label: string;
+  icon: IconType;
+  color: string;
+  bgColor: string;
+  borderColor: string;
+};
 
 type InvoiceItem = {
   name: string;
@@ -39,7 +48,7 @@ const Transaksi = () => {
         );
         console.log(res);
         setDataTransaction(res.data);
-      } catch (err) {
+      } catch {
         setError("Gagal mengambil data transaksi");
       } finally {
         setLoading(false);
@@ -49,7 +58,7 @@ const Transaksi = () => {
     fetchTransaction();
   }, []);
 
-  const statusConfig: Record<TransactionStatus, any> = {
+  const statusConfig: Record<TransactionStatus, StatusConfig> = {
     PENDING: {
       label: "Menunggu Pembayaran",
       icon: TbClock,
