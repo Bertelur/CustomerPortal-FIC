@@ -1,10 +1,10 @@
 import axios from "axios";
 import { useEffect, useState } from "react";
-import { TbClock, TbX, TbPackage, TbChecklist } from "react-icons/tb";
+import { TbClock, TbPackage, TbChecklist } from "react-icons/tb";
 import type { IconType } from "react-icons";
 import { Button } from "../../Components/Atoms/Button";
 import StatusTransaction from "../../Components/Molecules/StatusTransaction";
-type TransactionStatus = "PENDING" | "PAID" | "SETTLED" | "EXPIRED";
+type TransactionStatus = "PENDING" | "PAID" | "SETTLED";
 
 type StatusConfig = {
   label: string;
@@ -81,14 +81,6 @@ const Transaksi = () => {
       color: "text-green-600",
       bgColor: "bg-green-50",
       borderColor: "border-green-200",
-    },
-
-    EXPIRED: {
-      label: "Kedaluwarsa",
-      icon: TbX,
-      color: "text-red-600",
-      bgColor: "bg-red-50",
-      borderColor: "border-red-200",
     },
   };
 
@@ -167,12 +159,6 @@ const Transaksi = () => {
                       )}
                     </span>
                   </div>
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Alamat Pengiriman:</span>
-                    <span className="text-gray-900 text-right max-w-xs">
-                      Jl.Aceh
-                    </span>
-                  </div>
                 </div>
 
                 {/* Total */}
@@ -203,28 +189,6 @@ const Transaksi = () => {
                       </button>
                     </>
                   )}
-
-                  {item.status === "PAID" && (
-                    <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                      Menunggu Proses
-                    </button>
-                  )}
-                  {item.status === "SETTLED" && (
-                    <>
-                      <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                        Beli Lagi
-                      </button>
-                      <button className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg">
-                        Beri Ulasan
-                      </button>
-                    </>
-                  )}
-                  {item.status === "EXPIRED" && (
-                    <button className="flex-1 px-4 py-2 border border-gray-300 rounded-lg">
-                      Buat Pesanan Baru
-                    </button>
-                  )}
-
                   <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
                     Detail
                   </button>
