@@ -54,6 +54,8 @@ function Button({
       data-variant={variant}
       data-size={size}
       className={cn(buttonVariants({ variant, size, className }))}
+      role={asChild ? undefined : "button"}
+      tabIndex={props.disabled ? -1 : 0}
       {...props}
     />
   );

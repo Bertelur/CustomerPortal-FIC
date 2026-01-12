@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo, useCallback } from "react";
 import CartList from "../../Components/Organisms/CartList";
 import CartSummary from "../../Components/Organisms/CartSummary";
 import EmptyCart from "../../Components/Organisms/EmptyCart";
@@ -13,7 +13,8 @@ export default function CartPage() {
   };
 
   const [cartItems, setCartItems] = useState<CartItem[]>(() => getCart());
-  const updateQuantity = (id: number, value: number) => {
+
+  const updateQuantity = useCallback((id: number, value: number) => {
     setCartItems((prev) => {
       const updated = prev.map((item) =>
         item.id === id
@@ -27,9 +28,9 @@ export default function CartPage() {
       localStorage.setItem("cart", JSON.stringify(updated));
       return updated;
     });
-  };
+  }, []);
 
-  const removeItem = (id: number, unit: string) => {
+  const removeItem = useCallback((id: number, unit: string) => {
     setCartItems((prev) => {
       const updated = prev.filter(
         (item) => !(item.id === id && item.unit === unit)
@@ -37,14 +38,14 @@ export default function CartPage() {
       localStorage.setItem(CART_KEY, JSON.stringify(updated));
       return updated;
     });
-  };
+  }, []);
+
+  const subtotal = useMemo(
+    () => cartItems.reduce((acc, item) => acc + item.price * item.quantity, 0),
+    [cartItems]
+  );
 
   if (cartItems.length === 0) return <EmptyCart />;
-
-  const subtotal = cartItems.reduce(
-    (acc, item) => acc + item.price * item.quantity,
-    0
-  );
 
   return (
     <div className="min-h-screen bg-gray-50 p-8">

@@ -1,8 +1,15 @@
-import { useState } from "react";
+import { useState, memo } from "react";
 import type { ProductCardProps } from "./ProductProps.types";
 import { Button } from "../../Atoms/Button";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "../../Atoms/select";
 
-export default function ProductCard({
+const ProductCard = memo(function ProductCard({
   product,
   onAddToCart,
 }: ProductCardProps) {
@@ -10,23 +17,31 @@ export default function ProductCard({
   const selectedUnit = product.units[selectedIndex];
 
   return (
-    <div className="bg-white rounded-xl shadow hover:shadow-lg transition p-4 w-full sm:w-55 border">
-      <div className="">
+    <div className="bg-white rounded-xl hover:shadow-lg transition p-4 w-full sm:w-55 border">
+      <div className="gap-2 flex flex-col">
         <img
           src={product.image}
           alt={product.name}
           className="w-full h-40 object-cover rounded-lg"
+          loading="lazy"
+          decoding="async"
         />
-        <p className="mt-3 font-medium line-clamp-2">{product.name}</p>
-        <select
-          value={selectedIndex}
-          className="w-fit px-3 py-2 outline-none flex ring-0 focus:ring-0 focus:outline-none bg-transparent"
-          onChange={(e) => setSelectedIndex(Number(e.target.value))}
+        <h2 className="mt-3 font-medium line-clamp-2">{product.name}</h2>
+        <Select
+          value={selectedIndex.toString()}
+          onValueChange={(value) => setSelectedIndex(Number(value))}
         >
-          {product.units.map((u, i) => (
-            <option value={i}>{u.unit}</option>
-          ))}
-        </select>
+          <SelectTrigger className="w-full bg-gray-100">
+            <SelectValue placeholder="Pilih satuan" />
+          </SelectTrigger>
+          <SelectContent>
+            {product.units.map((u, i) => (
+              <SelectItem key={i} value={i.toString()}>
+                {u.unit}
+              </SelectItem>
+            ))}
+          </SelectContent>
+        </Select>
         <p className="text-orange-500 font-semibold mt-1">
           Rp {selectedUnit.price.toLocaleString("id-ID")}
         </p>
@@ -40,4 +55,6 @@ export default function ProductCard({
       </Button>
     </div>
   );
-}
+});
+
+export default ProductCard;

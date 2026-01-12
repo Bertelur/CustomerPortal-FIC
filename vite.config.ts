@@ -2,12 +2,29 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import { VitePWA } from "vite-plugin-pwa";
 import tailwindcss from "@tailwindcss/vite";
-import path from "path";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import { visualizer } from "rollup-plugin-visualizer";
+import { sentryVitePlugin } from "@sentry/vite-plugin";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 export default defineConfig({
   plugins: [
     react(),
     tailwindcss(),
+    sentryVitePlugin({
+      org: "ikhsansdq",
+      project: "fic",
+      authToken: process.env.VITE_SENTRY_AUTH_TOKEN,
+      sourcemaps: {
+        filesToDeleteAfterUpload: [
+          "./**/*.map",
+          ".*/**/public/**/*.map",
+          "./dist/**/client/**/*.map",
+        ],
+      },
+    }),
     VitePWA({
       registerType: "autoUpdate",
       includeAssets: ["favicon.ico"],
@@ -42,10 +59,33 @@ export default defineConfig({
         ],
       },
     }),
+    visualizer({
+      filename: "./dist/stats.html",
+      open: false,
+      gzipSize: true,
+      brotliSize: true,
+    }),
   ],
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
+      react: path.resolve(__dirname, "./node_modules/react"),
+      "react-dom": path.resolve(__dirname, "./node_modules/react-dom"),
+    },
+    dedupe: ["react", "react-dom"],
+  },
+  optimizeDeps: {
+    include: [
+      "react",
+      "react-dom",
+      "react/jsx-runtime",
+      "@radix-ui/react-select",
+      "@radix-ui/react-label",
+      "@radix-ui/react-slot",
+      "@radix-ui/react-primitive",
+    ],
+    esbuildOptions: {
+      jsx: "automatic",
     },
   },
   build: {

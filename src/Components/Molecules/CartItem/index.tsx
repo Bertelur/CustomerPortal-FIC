@@ -1,8 +1,9 @@
+import { memo } from "react";
 import { Button } from "../../Atoms/Button";
 import QuantityControl from "../QuantityControl";
 import type { CartItemProps } from "./CartItem.types";
 
-export default function CartItem({
+const CartItem = memo(function CartItem({
   name,
   price,
   image,
@@ -44,4 +45,6 @@ export default function CartItem({
       </div>
     </div>
   );
-}
+});
+
+export default CartItem;

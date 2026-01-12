@@ -1,9 +1,11 @@
+import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { useEffect, useState } from "react";
 import { TbClock, TbPackage, TbChecklist } from "react-icons/tb";
 import type { IconType } from "react-icons";
 import { Button } from "../../Components/Atoms/Button";
 import StatusTransaction from "../../Components/Molecules/StatusTransaction";
+import { queryKeys } from "../../Lib/react-query/queryKeys";
+import { SkeletonCard } from "../../Components/ui/Skeleton";
 type TransactionStatus = "PENDING" | "PAID" | "SETTLED";
 
 type StatusConfig = {
@@ -34,29 +36,22 @@ interface DataTransaction {
   invoice_url?: string;
 }
 
+const fetchTransactions = async (): Promise<DataTransaction[]> => {
+  const res = await axios.get<DataTransaction[]>(
+    `${import.meta.env.VITE_API_URL}/invoices`
+  );
+  return res.data;
+};
+
 const Transaksi = () => {
-  const [dataTransaction, setDataTransaction] = useState<DataTransaction[]>([]);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchTransaction = async () => {
-      try {
-        setLoading(true);
-        const res = await axios.get<DataTransaction[]>(
-          `${import.meta.env.VITE_API_URL}/invoices`
-        );
-        console.log(res);
-        setDataTransaction(res.data);
-      } catch {
-        setError("Gagal mengambil data transaksi");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchTransaction();
-  }, []);
+  const {
+    data: dataTransaction = [],
+    isLoading: loading,
+    error,
+  } = useQuery({
+    queryKey: queryKeys.transactions,
+    queryFn: fetchTransactions,
+  });
 
   const statusConfig: Record<TransactionStatus, StatusConfig> = {
     PENDING: {
@@ -84,11 +79,26 @@ const Transaksi = () => {
     },
   };
 
+  if (loading) {
+    return (
+      <div className="px-4 md:px-8 lg:px-20 xl:px-40 2xl:px-80">
+        <SkeletonCard />
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="px-4 md:px-8 lg:px-20 xl:px-40 2xl:px-80">
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4 text-red-800">
+          Gagal mengambil data transaksi
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="px-4 md:px-8 lg:px-20 xl:px-40 2xl:px-80">
-      {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
-
       {!loading &&
         dataTransaction.map((item) => {
           const statusInfo =
@@ -116,6 +126,8 @@ const Transaksi = () => {
                         src="https://images.unsplash.com/photo-1587486913049-53fc88980cfc"
                         alt={product.name}
                         className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                        loading="lazy"
+                        decoding="async"
                       />
 
                       <div className="flex-1">

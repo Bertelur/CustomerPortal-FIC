@@ -35,3 +35,5 @@ dist-ssr
 .env.test.local.backup.3
 .env.test.local.backup.4
 .env.test.local.backup.5
+# Sentry Config File
+.env.sentry-build-plugin
