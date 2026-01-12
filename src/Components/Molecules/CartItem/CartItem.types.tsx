@@ -7,5 +7,6 @@ export type CartItemProps = {
   quantity: number;
   unit: string;
   unitValue: number;
+  onQuantityChange: (value: number) => void;
   onRemove: () => void;
 };

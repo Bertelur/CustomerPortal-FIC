@@ -11,6 +11,6 @@ export type CartItem = {
 
 export type CartListProps = {
   items: CartItem[];
-  onQtyChange: (id: number, value: number) => void;
+  onQuantityChange: (id: number, value: number) => void;
   onRemove: (id: number, unit: string) => void;
 };

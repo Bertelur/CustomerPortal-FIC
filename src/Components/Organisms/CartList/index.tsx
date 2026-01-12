@@ -14,7 +14,7 @@ export default function CartList({
         <CartItem
           key={`${item.id}-${item.unit}`}
           {...item}
-          onQuantityChange={(value) => onQuantityChange(item.id, value)}
+          onQuantityChange={(value: number) => onQuantityChange(item.id, value)}
           onRemove={() => onRemove(item.id, item.unit)}
         />
       ))}

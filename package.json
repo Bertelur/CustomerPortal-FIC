@@ -1,12 +1,13 @@
 {
-  "name": "pwa-app",
+  "name": "Customer Portal",
   "private": true,
-  "version": "0.0.0",
+  "version": "0.1.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "type-check": "tsc -b --noEmit",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -26,6 +27,18 @@
     "tailwindcss": "^4.1.18",
     "vite-plugin-pwa": "^1.2.0"
   },
+  "author": "FIC",
+  "license": "MIT",
+  "homepage": "https://fic.com/",
+  "keywords": [
+    "customer portal",
+    "online shopping",
+    "product catalog",
+    "shopping cart",
+    "e-commerce",
+    "transactions",
+    "FIC"
+  ],
   "devDependencies": {
     "@eslint/js": "^9.39.1",
     "@types/node": "^24.10.4",

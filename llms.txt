@@ -1,0 +1,96 @@
+# Customer Portal - FIC
+
+## Project Overview
+Customer Portal is a Progressive Web Application (PWA) built with React and TypeScript for managing customer interactions, product catalog, shopping cart, and transactions.
+
+## Tech Stack
+- **Framework**: React 19.2.0
+- **Language**: TypeScript 5.9.3
+- **Build Tool**: Vite 7.2.4
+- **Routing**: React Router DOM 7.12.0
+- **Styling**: Tailwind CSS 4.1.18
+- **UI Components**: Radix UI (Label, Slot), Lucide React icons
+- **State Management**: React Hooks
+- **PWA**: Vite PWA Plugin 1.2.0
+- **HTTP Client**: Axios 1.13.2
+- **Carousel**: Swiper 12.0.3
+
+## Project Structure
+
+### Pages (`src/Pages/`)
+- **Home** (`/`) - Main landing page with product carousel
+- **Auth/Login** (`/login`) - User authentication page
+- **Auth/Register** (`/register`) - User registration page
+- **Cart** (`/cart`) - Shopping cart page
+- **Transaksi** (`/transaksi`) - Transaction history page
+- **Profile** (`/profile`) - User profile details page (planned)
+- **Katalog** (`/katalog`) - Product catalog page (planned)
+- **Payment** (`/payment`) - Payment processing page (planned)
+
+### Components (`src/Components/`)
+Following Atomic Design pattern:
+
+#### Atoms (`src/Components/Atoms/`)
+- **Button** - Reusable button component
+- **Input** - Form input component with types
+- **Label** - Form label component with types
+
+#### Molecules (`src/Components/Molecules/`)
+- **CartItem** - Individual cart item display
+- **CheckoutButton** - Checkout action button
+- **InputField** - Form input field with label
+- **Navbar** - Navigation bar component
+- **ProductCard** - Product display card
+- **QuantityControl** - Product quantity selector
+- **StatusTransaction** - Transaction status indicator
+
+#### Organisms (`src/Components/Organisms/`)
+- **Carousel** - Product carousel/slider
+- **CartList** - List of cart items
+- **CartSummary** - Cart totals and summary
+- **EmptyCart** - Empty cart state component
+- **LoginForm** - Login form component
+- **RegisterForm** - Registration form component
+
+### Data (`src/Data/`)
+- **productData.ts** - Product data and mock data
+
+### Types (`src/Types/`)
+- **swiper.d.ts** - Swiper type definitions
+
+### Utilities (`src/Lib/`)
+- **utils.ts** - Utility functions (e.g., className merging)
+
+## Routing
+All routes are defined in `src/App.tsx` using React Router:
+- `/` - Home page
+- `/login` - Login page
+- `/register` - Register page
+- `/cart` - Shopping cart
+- `/transaksi` - Transactions
+- `/profile` - Profile (planned)
+- `/katalog` - Catalog (planned)
+- `/payment` - Payment (planned)
+
+## Key Features
+- Progressive Web App (PWA) support with offline capabilities
+- Responsive design with Tailwind CSS
+- Component-based architecture following Atomic Design
+- Type-safe development with TypeScript
+- Product carousel and catalog display
+- Shopping cart functionality
+- User authentication and registration
+- Transaction management
+
+## Build & Development
+- **Dev Server**: `npm run dev` (Vite dev server)
+- **Build**: `npm run build` (TypeScript compilation + Vite build)
+- **Preview**: `npm run preview` (Preview production build)
+- **Lint**: `npm run lint` (ESLint)
+
+## Configuration Files
+- `vite.config.ts` - Vite and PWA configuration
+- `tsconfig.json` - TypeScript configuration
+- `components.json` - Component library configuration
+- `eslint.config.js` - ESLint configuration
+- `package.json` - Dependencies and scripts
