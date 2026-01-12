@@ -34,11 +34,7 @@ export default function Navbar() {
               <NavLink to="/cart" className={linkClass}>
                 <TbShoppingCartFilled size={24} />
               </NavLink>
-              <NavLink
-                to="/"
-                className={``}
-                onClick={() => setIsLogin(!isLogin)}
-              >
+              <NavLink to="/profile">
                 <TbUser size={24} />
               </NavLink>
             </div>

@@ -5,6 +5,7 @@ import CartPage from "./Pages/Cart";
 import Transaksi from "./Pages/Transaksi";
 import Login from "./Pages/Auth/Login";
 import Register from "./Pages/Auth/Register";
+import Profile from "./Pages/Profile";
 
 export default function App() {
   return (
@@ -15,6 +16,7 @@ export default function App() {
           <Route path="/" element={<Home />} />
           <Route path="/transaksi" element={<Transaksi />} />
           <Route path="/cart" element={<CartPage />} />
+          <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
         </Routes>
