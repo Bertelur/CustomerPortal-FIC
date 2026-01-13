@@ -22,6 +22,7 @@ const LoginForm = () => {
         { withCredentials: true }
       );
       localStorage.setItem("accessToken", response.data.accessToken);
+      window.dispatchEvent(new Event("auth-change"));
       navigate("/");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
