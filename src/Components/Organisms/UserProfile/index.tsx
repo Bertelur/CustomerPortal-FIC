@@ -22,8 +22,16 @@ const UserProfile = () => {
         );
         console.log("Ini RESPONSE:", res.data.data);
         setDataUser(res.data.data);
-      } catch (error: any) {
-        console.log(error);
+      } catch (error: unknown) {
+        if (axios.isAxiosError(error)) {
+          console.log("Axios error message:", error.message);
+          console.log("Axios response:", error.response?.data);
+          console.log("Status:", error.response?.status);
+        } else if (error instanceof Error) {
+          console.log("General error:", error.message);
+        } else {
+          console.log("Unknown error:", error);
+        }
       }
     };
 
@@ -35,7 +43,7 @@ const UserProfile = () => {
       <div className="grid md:grid-cols-2 gap-10">
         <div>
           <p className="font-gray-300">Nama</p>
-          <p>{dataUser?.nama}</p>
+          <p className="">{dataUser?.nama}</p>
         </div>
         <div>
           <p>Email</p>
