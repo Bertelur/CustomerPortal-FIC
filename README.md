@@ -227,4 +227,24 @@ FIC
 
 ---
 
+## Removing the Coming Soon Landing Page
+
+To completely remove the landing page and restore the full application:
+
+1. **Delete the landing page file:**
+   ```bash
+   rm src/Pages/Landing/index.tsx
+   ```
+
+2. **Revert `src/App.tsx` to its original state:**
+   - Remove the `COMING_SOON_MODE` constant
+   - Remove the `LandingPage` import
+   - Remove the `Navigate` import (if not used elsewhere)
+   - Remove the conditional logic that checks `COMING_SOON_MODE`
+   - Restore the original `App` component structure with all routes
+
+Alternatively, you can simply set `COMING_SOON_MODE = false` in `src/App.tsx` to temporarily disable the landing page without deleting files.
+
+---
+
 For more information, visit [https://fic.com/](https://fic.com/)
