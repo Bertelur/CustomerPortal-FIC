@@ -62,115 +62,130 @@ const Transaksi = () => {
     <div className="mt-10 space-y-4">
       {loading && <p>Loading...</p>}
       {error && <p>{error}</p>}
+      {!loading && (
+        <>
+          <p className="mb-4 font-semibold text-lg">Riwayat Transaksi</p>
 
-      {!loading &&
-        dataTransaction.map((item) => {
-          const statusInfo =
-            statusConfig[item.status as TransactionStatus] ??
-            statusConfig.PENDING;
-          const StatusIcon = statusInfo.icon;
-          return (
-            <div className="border rounded-2xl">
-              <div
-                className={`${statusInfo.bgColor} px-4 py-3 border-b ${statusInfo.borderColor} rounded-t-2xl`}
-              >
-                <StatusTransaction
-                  Icon={StatusIcon}
-                  status={item.status}
-                  color={statusInfo.color}
-                  created={item.created}
-                  orderId={item.external_id}
-                />
-              </div>
-              <div className="p-4">
-                <div className="space-y-3">
-                  {item.items?.map((product, index) => (
-                    <div key={index} className="flex gap-4">
-                      <img
-                        src="https://images.unsplash.com/photo-1587486913049-53fc88980cfc"
-                        alt={product.name}
-                        className="w-20 h-20 object-cover rounded-md border border-gray-200"
-                      />
+          {dataTransaction.map((item) => {
+            const statusInfo =
+              statusConfig[item.status as TransactionStatus] ??
+              statusConfig.PENDING;
 
-                      <div className="flex-1">
-                        <h4 className="font-medium text-gray-900">
-                          {product.name}
-                        </h4>
+            const StatusIcon = statusInfo.icon;
 
-                        <p className="text-sm text-gray-500 mt-1">
-                          Jumlah: {product.quantity} × Rp{" "}
-                          {product.price.toLocaleString("id-ID")}
-                        </p>
+            return (
+              <div key={item.external_id} className="border rounded-2xl mb-4">
+                <div
+                  className={`${statusInfo.bgColor} px-4 py-3 border-b ${statusInfo.borderColor} rounded-t-2xl`}
+                >
+                  <StatusTransaction
+                    Icon={StatusIcon}
+                    status={item.status}
+                    color={statusInfo.color}
+                    created={item.created}
+                    orderId={item.external_id}
+                  />
+                </div>
+
+                <div className="p-4">
+                  <div className="space-y-3">
+                    {item.items?.map((product, index) => (
+                      <div key={index} className="flex gap-4">
+                        <img
+                          src={
+                            product.image ??
+                            "https://images.unsplash.com/photo-1587486913049-53fc88980cfc"
+                          }
+                          alt={product.name}
+                          className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                        />
+
+                        <div className="flex-1">
+                          <h4 className="font-medium text-gray-900">
+                            {product.name}
+                          </h4>
+
+                          <p className="text-sm text-gray-500 mt-1">
+                            Jumlah: {product.quantity} × Rp{" "}
+                            {product.price.toLocaleString("id-ID")}
+                          </p>
+                        </div>
+
+                        <div className="text-right">
+                          <p className="font-medium text-gray-900">
+                            Rp{" "}
+                            {(product.price * product.quantity).toLocaleString(
+                              "id-ID"
+                            )}
+                          </p>
+                        </div>
                       </div>
+                    ))}
+                  </div>
 
-                      <div className="text-right">
-                        <p className="font-medium text-gray-900">
-                          Rp{" "}
-                          {(product.price * product.quantity).toLocaleString(
-                            "id-ID"
-                          )}
-                        </p>
-                      </div>
+                  {/* Divider */}
+                  <div className="border-t border-gray-200 my-4"></div>
+
+                  {/* Details */}
+                  <div className="space-y-2 text-sm">
+                    <div className="flex justify-between">
+                      <span className="text-gray-600">Metode Pembayaran:</span>
+                      <span className="text-gray-900">
+                        {!item.payment_method
+                          ? "Belum Bayar"
+                          : item.payment_method === "BANK_TRANSFER"
+                          ? `BANK ${item.bank_code}`
+                          : item.payment_method === "QR_CODE"
+                          ? "QR Code"
+                          : item.payment_method}
+                      </span>
                     </div>
-                  ))}
-                </div>
-                {/* Divider */}
-                <div className="border-t border-gray-200 my-4"></div>
-
-                {/* Details */}
-                <div className="space-y-2 text-sm">
-                  <div className="flex justify-between">
-                    <span className="text-gray-600">Metode Pembayaran:</span>
-                    <span className="text-gray-900">
-                      {!item.payment_method ? (
-                        <p>Belum Bayar</p>
-                      ) : item.payment_method === "BANK_TRANSFER" ? (
-                        <p>BANK {item.bank_code}</p>
-                      ) : item.payment_method === "QR_CODE" ? (
-                        <p>QR Code</p>
-                      ) : (
-                        item.payment_method
-                      )}
-                    </span>
                   </div>
-                </div>
 
-                {/* Total */}
-                <div className="border-t border-gray-200 mt-4 pt-4">
-                  <div className="flex justify-between items-center">
-                    <span className="text-gray-900 font-semibold">
-                      Total Pembayaran
-                    </span>
-                    <span className="text-xl font-bold text-gray-900">
-                      Total: Rp {item.amount.toLocaleString("id-ID")}
-                    </span>
+                  {/* Total */}
+                  <div className="border-t border-gray-200 mt-4 pt-4">
+                    <div className="flex justify-between items-center">
+                      <span className="text-gray-900 font-semibold">
+                        Total Pembayaran
+                      </span>
+                      <span className="text-xl font-bold text-gray-900">
+                        Rp {item.amount.toLocaleString("id-ID")}
+                      </span>
+                    </div>
                   </div>
-                </div>
 
-                {/* Actions */}
-                <div className="mt-4 flex gap-2">
-                  {item.status === "PENDING" && (
-                    <>
-                      <Button
-                        onClick={() => window.open(item.invoice_url, "_blank")}
-                        className="flex-1"
-                      >
-                        Bayar Sekarang
-                      </Button>
+                  {/* Actions */}
+                  <div className="mt-4 flex gap-2">
+                    {item.status === "PENDING" && (
+                      <>
+                        <Button
+                          onClick={() =>
+                            window.open(item.invoice_url, "_blank")
+                          }
+                          className="flex-1"
+                        >
+                          Bayar Sekarang
+                        </Button>
 
-                      <button className="flex-1 px-4 py-2 border border-red-300 text-red-600 rounded-lg">
-                        Batalkan
-                      </button>
-                    </>
-                  )}
-                  <button className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors">
-                    Detail
-                  </button>
+                        <Button className="flex-1 px-4 py-2 border bg-white hover:bg-white border-red-300 text-red-600 rounded-lg">
+                          Batalkan
+                        </Button>
+                      </>
+                    )}
+
+                    <Button
+                      onClick={() => window.open(item.invoice_url, "_blank")}
+                      className="px-4 py-2 border border-gray-300 rounded-lg hover:text-gray-800 text-white hover:bg-gray-50 transition-colors"
+                    >
+                      Detail
+                    </Button>
+                  </div>
                 </div>
               </div>
-            </div>
-          );
-        })}
+            );
+          })}
+        </>
+      )}
     </div>
   );
 };

@@ -203,6 +203,46 @@ VITE_API_URL=http://localhost:3000
 
 Access these variables in your code using `import.meta.env.VITE_API_URL`.
 
+## Data Models
+
+### User
+
+- id: string(uuid, PK)
+- name: string
+- email: string(unique)
+- password: string(hashed)
+- createdAt: timestamp
+
+### Product
+
+- id: number (primary key)
+- name: string
+- image: string (URL)
+- stock: number
+- units: Unit[]
+- createdAt: timestamp
+- updatedAt: timestamp
+
+### Unit
+
+- unit: string
+- unitValue: number
+- price: number
+
+### Invoice
+
+- id: number;
+- productName: string;
+- amount: number;
+- status: TransactionStatus;
+- createdAt: string;
+- external_id: string;
+- created: string;
+- items?: product[];
+- payment_method?: string;
+- bank_code?: string;
+- invoice_url?: string;
+
 ## Browser Support
 
 - Chrome (latest)

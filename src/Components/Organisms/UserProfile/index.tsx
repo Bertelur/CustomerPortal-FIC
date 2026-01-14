@@ -39,14 +39,14 @@ const UserProfile = () => {
   }, []);
   return (
     <div className="space-y-6 border rounded-2xl py-8 px-4">
-      <div>Informasi Pribadi</div>
+      <p className="text-2xl">Informasi Pribadi</p>
       <div className="grid md:grid-cols-2 gap-10">
-        <div>
-          <p className="font-gray-300">Nama</p>
+        <div className="">
+          <p className="text-gray-400 text-xl">Nama</p>
           <p className="">{dataUser?.nama}</p>
         </div>
         <div>
-          <p>Email</p>
+          <p className="text-gray-400 text-xl">Email</p>
           <p>{dataUser?.email}</p>
         </div>
       </div>
@@ -74,7 +74,7 @@ const UserProfile = () => {
       <div className="space-x-3">
         <Button>Simpan Perubahan</Button>
         <Button
-          className="bg-red-500"
+          className="bg-red-500 hover:bg-white hover:text-red-500 border border-red-500"
           onClick={() => {
             localStorage.removeItem("accessToken");
             window.dispatchEvent(new Event("auth-change"));
