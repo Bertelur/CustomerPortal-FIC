@@ -17,16 +17,19 @@ export default function CheckoutButton({
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/create-invoice", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          amount,
-          customerName,
-          customerEmail,
-          cart,
-        }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/create-invoice`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            amount,
+            customerName,
+            customerEmail,
+            cart,
+          }),
+        }
+      );
 
       const data = await res.json();
       window.location.href = data.invoice_url;

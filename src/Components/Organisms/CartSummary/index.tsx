@@ -20,14 +20,16 @@ export default function CartSummary({
     setLoading(true);
 
     try {
-      const res = await axios.post("http://localhost:3000/create-invoice", {
-        amount: subtotal + shipping,
-        customerName,
-        customerEmail,
-        cart,
-      });
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/create-invoice`,
+        {
+          amount: subtotal + shipping,
+          customerName,
+          customerEmail,
+          cart,
+        }
+      );
 
-      // axios otomatis parse JSON
       const data = res.data;
 
       if (!data.invoice_url) {

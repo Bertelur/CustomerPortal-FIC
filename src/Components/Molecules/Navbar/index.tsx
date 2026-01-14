@@ -1,11 +1,24 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { NavLink } from "react-router";
 import { TbShoppingCartFilled, TbUser } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 export default function Navbar() {
   const [open, setOpen] = useState(false);
-  const [isLogin, setIsLogin] = useState(true);
+  const [isLogin, setIsLogin] = useState<string | null>(null);
 
+  useEffect(() => {
+    const checkAuth = () => {
+      setIsLogin(localStorage.getItem("accessToken"));
+    };
+
+    checkAuth();
+    window.addEventListener("auth-change", checkAuth);
+    window.addEventListener("storage", checkAuth);
+    return () => {
+      window.removeEventListener("auth-change", checkAuth);
+      window.removeEventListener("storage", checkAuth);
+    };
+  }, []);
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? "text-orange-500 font-semibold"
@@ -14,33 +27,27 @@ export default function Navbar() {
   return (
     <header className="w-full bg-white shadow-md fixed top-0 left-0 z-50">
       <div className="max-w-7xl mx-auto px-4 h-16 flex items-center justify-between">
-        <div className="text-lg font-bold text-orange-500">Logo</div>
-        {isLogin ? (
-          <nav className="hidden md:flex gap-8 md:items-center">
-            <NavLink to="/" className={linkClass}>
-              Home
-            </NavLink>
-            <NavLink to="/transaksi" className={linkClass}>
-              Transaksi
-            </NavLink>
-          </nav>
-        ) : (
-          <div></div>
-        )}
-
+        <NavLink to={`/`} className="text-lg font-bold text-orange-500">
+          Logo
+        </NavLink>
         <nav className="hidden md:flex gap-4 md:items-center">
           {isLogin ? (
             <div className="md:flex gap-4 md:items-center">
               <NavLink to="/cart" className={linkClass}>
                 <TbShoppingCartFilled size={24} />
               </NavLink>
-              <NavLink to="/profile">
+              <NavLink to="/profile" className={linkClass}>
                 <TbUser size={24} />
               </NavLink>
             </div>
           ) : (
-            <div>
-              <Button onClick={() => setIsLogin(!isLogin)}>Login</Button>
+            <div className="flex gap-4">
+              <NavLink to={`/login`}>
+                <Button>Login</Button>
+              </NavLink>
+              <NavLink to={`/register`}>
+                <Button>Register</Button>
+              </NavLink>
             </div>
           )}
         </nav>
@@ -60,7 +67,8 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="md:hidden flex items-center gap-4">
-            <Button onClick={() => setIsLogin(!isLogin)}></Button>
+            <NavLink to={`/login`}>Login</NavLink>
+            <NavLink to={`/register`}>Register</NavLink>
           </div>
         )}
       </div>

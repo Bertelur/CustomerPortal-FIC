@@ -44,7 +44,7 @@ const Transaksi = () => {
       try {
         setLoading(true);
         const res = await axios.get<DataTransaction[]>(
-          "http://localhost:3000/invoices"
+          `${import.meta.env.VITE_API_URL}/invoices`
         );
         console.log(res);
         setDataTransaction(res.data);

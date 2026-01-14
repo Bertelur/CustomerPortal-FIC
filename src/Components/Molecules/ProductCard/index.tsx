@@ -24,7 +24,9 @@ export default function ProductCard({
           onChange={(e) => setSelectedIndex(Number(e.target.value))}
         >
           {product.units.map((u, i) => (
-            <option value={i}>{u.unit}</option>
+            <option key={i} value={i}>
+              {u.unit}
+            </option>
           ))}
         </select>
         <p className="text-orange-500 font-semibold mt-1">
