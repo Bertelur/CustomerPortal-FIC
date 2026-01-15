@@ -1,41 +1,15 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import type { ApiResponse, UserProfileProps } from "./UserProfile.types";
+import type { UserProfileProps } from "./UserProfile.types";
 import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 const UserProfile = () => {
   const navigate = useNavigate();
   const [dataUser, setDataUser] = useState<UserProfileProps | null>(null);
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        const token = localStorage.getItem("accessToken");
-        console.log(token);
-        const res = await axios.get<ApiResponse<UserProfileProps>>(
-          `${import.meta.env.VITE_API_URL}/api/users/me`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-        console.log("Ini RESPONSE:", res.data.data);
-        setDataUser(res.data.data);
-      } catch (error: unknown) {
-        if (axios.isAxiosError(error)) {
-          console.log("Axios error message:", error.message);
-          console.log("Axios response:", error.response?.data);
-          console.log("Status:", error.response?.status);
-        } else if (error instanceof Error) {
-          console.log("General error:", error.message);
-        } else {
-          console.log("Unknown error:", error);
-        }
-      }
-    };
-
-    fetchUser();
+    const userStr = localStorage.getItem("user");
+    const user = userStr ? JSON.parse(userStr) : null;
+    setDataUser(user);
   }, []);
   return (
     <div className="space-y-6 border rounded-2xl py-8 px-4">
@@ -43,7 +17,7 @@ const UserProfile = () => {
       <div className="grid md:grid-cols-2 gap-10">
         <div className="">
           <p className="text-gray-400 text-xl">Nama</p>
-          <p className="">{dataUser?.nama}</p>
+          <p className="">{dataUser?.username}</p>
         </div>
         <div>
           <p className="text-gray-400 text-xl">Email</p>
@@ -76,7 +50,7 @@ const UserProfile = () => {
         <Button
           className="bg-red-500 hover:bg-white hover:text-red-500 border border-red-500"
           onClick={() => {
-            localStorage.removeItem("accessToken");
+            localStorage.removeItem("user");
             window.dispatchEvent(new Event("auth-change"));
             navigate("/");
           }}

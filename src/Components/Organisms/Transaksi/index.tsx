@@ -61,7 +61,6 @@ const Transaksi = () => {
   return (
     <div className="mt-10 space-y-4">
       {loading && <p>Loading...</p>}
-      {error && <p>{error}</p>}
       {!loading && (
         <>
           <p className="mb-4 font-semibold text-lg">Riwayat Transaksi</p>
@@ -186,6 +185,7 @@ const Transaksi = () => {
           })}
         </>
       )}
+      {error && <p>{error}</p>}
     </div>
   );
 };

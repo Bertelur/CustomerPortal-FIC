@@ -3,9 +3,11 @@ import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
+  const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -17,11 +19,15 @@ const LoginForm = () => {
 
     try {
       const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/users/login`,
-        form,
+        `${import.meta.env.VITE_API_URL}/api/v1/auth/login`,
+        {
+          email: form.email,
+          password: form.password,
+          type: "buyer",
+        },
         { withCredentials: true }
       );
-      localStorage.setItem("accessToken", response.data.accessToken);
+      localStorage.setItem("user", JSON.stringify(response.data.data.user));
       window.dispatchEvent(new Event("auth-change"));
       navigate("/");
     } catch (error: unknown) {
@@ -38,9 +44,10 @@ const LoginForm = () => {
   return (
     <form
       onSubmit={handleSubmit}
-      className="space-y-4 flex flex-col items-center justify-center h-[90vh]"
+      className="space-y-4 flex flex-col items-center justify-center "
     >
       <InputField
+        Icon={Mail}
         label="Email"
         name="email"
         type="email"
@@ -49,7 +56,10 @@ const LoginForm = () => {
       <InputField
         label="Password"
         name="password"
-        type="password"
+        type={showPassword ? "text" : "password"}
+        Icon={Lock}
+        IconLeading={showPassword ? EyeClosed : Eye}
+        togglePassword={() => setShowPassword(!showPassword)}
         onChange={handleChange}
       />
 

@@ -8,7 +8,7 @@ export default function Navbar() {
 
   useEffect(() => {
     const checkAuth = () => {
-      setIsLogin(localStorage.getItem("accessToken"));
+      setIsLogin(localStorage.getItem("user"));
     };
 
     checkAuth();
@@ -43,10 +43,7 @@ export default function Navbar() {
           ) : (
             <div className="flex gap-4">
               <NavLink to={`/login`}>
-                <Button>Login</Button>
-              </NavLink>
-              <NavLink to={`/register`}>
-                <Button>Register</Button>
+                <Button>Masuk</Button>
               </NavLink>
             </div>
           )}
@@ -67,8 +64,9 @@ export default function Navbar() {
           </div>
         ) : (
           <div className="md:hidden flex items-center gap-4">
-            <NavLink to={`/login`}>Login</NavLink>
-            <NavLink to={`/register`}>Register</NavLink>
+            <NavLink to={`/login`}>
+              <Button>Masuk</Button>
+            </NavLink>
           </div>
         )}
       </div>
