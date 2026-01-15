@@ -6,6 +6,8 @@ import Transaksi from "./Pages/Transaksi";
 import Login from "./Pages/Auth/Login";
 import Register from "./Pages/Auth/Register";
 import Profile from "./Pages/Profile";
+import PaymentStatusSuccess from "./Pages/PaymentStatus/Success";
+import PaymentStatusFailure from "./Pages/PaymentStatus/Failure";
 
 export default function App() {
   return (
@@ -19,6 +21,8 @@ export default function App() {
           <Route path="/profile" element={<Profile />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
+          <Route path="/success" element={<PaymentStatusSuccess />} />
+          <Route path="/failure" element={<PaymentStatusFailure />} />
         </Routes>
       </main>
     </div>
