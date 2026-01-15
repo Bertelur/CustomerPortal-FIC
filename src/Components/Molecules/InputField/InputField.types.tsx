@@ -1,9 +1,9 @@
 import type React from "react";
 
-export type InputFieldProps = React.InputHTMLAttributes<HTMLInputElement> & {
+export type InputFieldProps = {
+  Icon?: React.ElementType;
+  IconLeading?: React.ElementType;
   label: string;
-  type?: string;
-  name: string;
-  placeholder?: string;
   containerClassName?: string;
-};
+  togglePassword?: () => void;
+} & React.InputHTMLAttributes<HTMLInputElement>;
