@@ -267,4 +267,4 @@ FIC
 
 ---
 
-For more information, visit [https://fic.com/](https://fic.com/)
+For more information, visit [https://ptfahmijayaintr.com/](https://ptfahmijayaintr.com/)
