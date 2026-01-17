@@ -8,8 +8,18 @@ import Register from "./Pages/Auth/Register";
 import Profile from "./Pages/Profile";
 import PaymentStatusSuccess from "./Pages/PaymentStatus/Success";
 import PaymentStatusFailure from "./Pages/PaymentStatus/Failure";
+import { useEffect } from "react";
+import { gaEvent } from "./Lib/ga";
 
 export default function App() {
+  useEffect(() => {
+    gaEvent("page_view", {
+      page_location: window.location.href,
+      page_title: document.title,
+      page_path: window.location.pathname,
+    })
+  }, []);
+
   return (
     <div className="min-h-screen">
       <Navbar />

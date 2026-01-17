@@ -10,6 +10,7 @@ import type {
   ProductProps,
   UnitType,
 } from "../../Molecules/ProductCard/ProductProps.types";
+import { Button } from "../../Atoms/Button";
 
 interface ProductCarouselProps {
   title: string;
@@ -67,12 +68,12 @@ export default function ProductCarousel({
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-semibold">{title}</h2>
         <div className="flex gap-3 max-sm:hidden">
-          <button onClick={() => swiperRef.current?.slidePrev()}>
+          <Button type="button" variant="outline" onClick={() => swiperRef.current?.slidePrev()}>
             <TbArrowLeft size={28} />
-          </button>
-          <button onClick={() => swiperRef.current?.slideNext()}>
+          </Button>
+          <Button type="button" variant="outline" onClick={() => swiperRef.current?.slideNext()}>
             <TbArrowRight size={28} />
-          </button>
+          </Button>
         </div>
       </div>
 
