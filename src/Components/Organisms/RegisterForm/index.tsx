@@ -21,17 +21,16 @@ const RegisterForm = () => {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/auth/register`,
         {
           email: form.email,
           username: form.username,
           password: form.password,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
-      console.log("RESPONSE:", response.data);
-      navigate("/");
+      navigate("/login");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.error("REGISTER ERROR:", error.response?.data || error.message);

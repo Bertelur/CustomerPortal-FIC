@@ -18,11 +18,15 @@ const Transaksi = () => {
     const fetchTransaction = async () => {
       try {
         setLoading(true);
-        const res = await axios.get<DataTransaction[]>(
-          `${import.meta.env.VITE_API_URL}/invoices`
+
+        const res = await axios.get<{ data: DataTransaction[] }>(
+          `${import.meta.env.VITE_API_URL}/api/v1/invoices/my`,
+          { withCredentials: true },
         );
-        setDataTransaction(res.data);
-      } catch {
+
+        setDataTransaction(res.data.data);
+      } catch (err) {
+        console.error(err);
         setError("Gagal mengambil data transaksi");
       } finally {
         setLoading(false);
@@ -33,7 +37,7 @@ const Transaksi = () => {
   }, []);
 
   const statusConfig: Record<TransactionStatus, StatusConfig> = {
-    PENDING: {
+    pending: {
       label: "Menunggu Pembayaran",
       icon: TbClock,
       color: "text-yellow-600",
@@ -41,7 +45,7 @@ const Transaksi = () => {
       borderColor: "border-yellow-200",
     },
 
-    PAID: {
+    paid: {
       label: "Pembayaran Diterima",
       icon: TbPackage,
       color: "text-blue-600",
@@ -49,143 +53,131 @@ const Transaksi = () => {
       borderColor: "border-blue-200",
     },
 
-    SETTLED: {
-      label: "Selesai",
+    failed: {
+      label: "Gagal",
       icon: TbChecklist,
-      color: "text-green-600",
-      bgColor: "bg-green-50",
-      borderColor: "border-green-200",
+      color: "text-red-600",
+      bgColor: "bg-red-50",
+      borderColor: "border-red-200",
+    },
+
+    expired: {
+      label: "Kedaluwarsa",
+      icon: TbChecklist,
+      color: "text-gray-600",
+      bgColor: "bg-gray-50",
+      borderColor: "border-gray-200",
     },
   };
 
+  if (loading) return <p className="mt-10">Loading...</p>;
+  if (error) return <p className="mt-10 text-red-600">{error}</p>;
+
   return (
     <div className="mt-10 space-y-4">
-      {loading && <p>Loading...</p>}
-      {!loading && (
-        <>
-          <p className="mb-4 font-semibold text-lg">Riwayat Transaksi</p>
+      <p className="mb-4 font-semibold text-lg">Riwayat Transaksi</p>
 
-          {dataTransaction.map((item) => {
-            const statusInfo =
-              statusConfig[item.status as TransactionStatus] ??
-              statusConfig.PENDING;
+      {dataTransaction.map((item) => {
+        const statusInfo = statusConfig[item.status];
+        const StatusIcon = statusInfo.icon;
 
-            const StatusIcon = statusInfo.icon;
+        return (
+          <div key={item.id} className="border rounded-2xl mb-4 bg-white">
+            {/* HEADER STATUS */}
+            <div
+              className={`${statusInfo.bgColor} px-4 py-3 border-b ${statusInfo.borderColor} rounded-t-2xl`}
+            >
+              <StatusTransaction
+                Icon={StatusIcon}
+                status={statusInfo.label}
+                color={statusInfo.color}
+                created={item.createdAt}
+                orderId={item.paymentExternalId}
+              />
+            </div>
 
-            return (
-              <div key={item.external_id} className="border rounded-2xl mb-4">
-                <div
-                  className={`${statusInfo.bgColor} px-4 py-3 border-b ${statusInfo.borderColor} rounded-t-2xl`}
-                >
-                  <StatusTransaction
-                    Icon={StatusIcon}
-                    status={item.status}
-                    color={statusInfo.color}
-                    created={item.created}
-                    orderId={item.external_id}
-                  />
-                </div>
+            {/* BODY */}
+            <div className="p-4">
+              {/* ITEMS */}
+              <div className="space-y-3">
+                {item.items.map((product, index) => (
+                  <div key={index} className="flex gap-4">
+                    <img
+                      src="https://images.unsplash.com/photo-1587486913049-53fc88980cfc"
+                      alt={product.name}
+                      className="w-20 h-20 object-cover rounded-md border border-gray-200"
+                    />
 
-                <div className="p-4">
-                  <div className="space-y-3">
-                    {item.items?.map((product, index) => (
-                      <div key={index} className="flex gap-4">
-                        <img
-                          src={
-                            product.image ??
-                            "https://images.unsplash.com/photo-1587486913049-53fc88980cfc"
-                          }
-                          alt={product.name}
-                          className="w-20 h-20 object-cover rounded-md border border-gray-200"
-                        />
+                    <div className="flex-1">
+                      <h4 className="font-medium text-gray-900">
+                        {product.name}
+                      </h4>
 
-                        <div className="flex-1">
-                          <h4 className="font-medium text-gray-900">
-                            {product.name}
-                          </h4>
+                      <p className="text-sm text-gray-500 mt-1">
+                        Jumlah: {product.quantity} × Rp{" "}
+                        {product.price.toLocaleString("id-ID")}
+                      </p>
+                    </div>
 
-                          <p className="text-sm text-gray-500 mt-1">
-                            Jumlah: {product.quantity} × Rp{" "}
-                            {product.price.toLocaleString("id-ID")}
-                          </p>
-                        </div>
-
-                        <div className="text-right">
-                          <p className="font-medium text-gray-900">
-                            Rp{" "}
-                            {(product.price * product.quantity).toLocaleString(
-                              "id-ID"
-                            )}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  {/* Divider */}
-                  <div className="border-t border-gray-200 my-4"></div>
-
-                  {/* Details */}
-                  <div className="space-y-2 text-sm">
-                    <div className="flex justify-between">
-                      <span className="text-gray-600">Metode Pembayaran:</span>
-                      <span className="text-gray-900">
-                        {!item.payment_method
-                          ? "Belum Bayar"
-                          : item.payment_method === "BANK_TRANSFER"
-                          ? `BANK ${item.bank_code}`
-                          : item.payment_method === "QR_CODE"
-                          ? "QR Code"
-                          : item.payment_method}
-                      </span>
+                    <div className="text-right">
+                      <p className="font-medium text-gray-900">
+                        Rp{" "}
+                        {(product.price * product.quantity).toLocaleString(
+                          "id-ID",
+                        )}
+                      </p>
                     </div>
                   </div>
+                ))}
+              </div>
 
-                  {/* Total */}
-                  <div className="border-t border-gray-200 mt-4 pt-4">
-                    <div className="flex justify-between items-center">
-                      <span className="text-gray-900 font-semibold">
-                        Total Pembayaran
-                      </span>
-                      <span className="text-xl font-bold text-gray-900">
-                        Rp {item.amount.toLocaleString("id-ID")}
-                      </span>
-                    </div>
-                  </div>
+              {/* DIVIDER */}
+              <div className="border-t border-gray-200 my-4"></div>
 
-                  {/* Actions */}
-                  <div className="mt-4 flex gap-2">
-                    {item.status === "PENDING" && (
-                      <>
-                        <Button
-                          onClick={() =>
-                            window.open(item.invoice_url, "_blank")
-                          }
-                          className="flex-1"
-                        >
-                          Bayar Sekarang
-                        </Button>
-
-                        <Button className="flex-1 px-4 py-2 border bg-white hover:bg-white border-red-300 text-red-600 rounded-lg">
-                          Batalkan
-                        </Button>
-                      </>
-                    )}
-
-                    <Button
-                      onClick={() => window.open(item.invoice_url, "_blank")}
-                      className="px-4 py-2 border border-gray-300 rounded-lg hover:text-gray-800 text-white hover:bg-gray-50 transition-colors"
-                    >
-                      Detail
-                    </Button>
-                  </div>
+              {/* DETAIL */}
+              <div className="space-y-2 text-sm">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Metode Pembayaran:</span>
+                  <span className="text-gray-900">
+                    {item.paymentMethod ?? "Belum Bayar"}
+                  </span>
                 </div>
               </div>
-            );
-          })}
-        </>
-      )}
-      {error && <p>{error}</p>}
+
+              {/* TOTAL */}
+              <div className="border-t border-gray-200 mt-4 pt-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-gray-900 font-semibold">
+                    Total Pembayaran
+                  </span>
+                  <span className="text-xl font-bold text-gray-900">
+                    Rp {item.amount.toLocaleString("id-ID")}
+                  </span>
+                </div>
+              </div>
+
+              {/* ACTIONS */}
+              <div className="mt-4 flex gap-2">
+                {item.status === "pending" && (
+                  <Button
+                    onClick={() => window.open(item.invoiceUrl, "_blank")}
+                    className="flex-1"
+                  >
+                    Bayar Sekarang
+                  </Button>
+                )}
+
+                <Button
+                  onClick={() => window.open(item.invoiceUrl, "_blank")}
+                  className="px-4 py-2 border border-gray-300 rounded-lg hover:text-gray-800 text-white hover:bg-gray-50 transition-colors"
+                >
+                  Detail
+                </Button>
+              </div>
+            </div>
+          </div>
+        );
+      })}
     </div>
   );
 };

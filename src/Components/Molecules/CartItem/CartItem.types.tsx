@@ -1,12 +1,9 @@
 export type CartItemProps = {
-  id: number;
+  productId: string;
   name: string;
   price: number;
-  stock: number;
-  image: string;
+  imageUrl: string;
   quantity: number;
-  unit: string;
-  unitValue: number;
-  onQuantityChange: (value: number) => void;
+  onQuantityChange: (productId: string, value: number) => void;
   onRemove: () => void;
 };

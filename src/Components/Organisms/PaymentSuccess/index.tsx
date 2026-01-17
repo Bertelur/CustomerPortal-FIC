@@ -1,8 +1,20 @@
+import axios from "axios";
 import { CheckCircle, Home } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 export default function PaymentSuccess() {
   const navigate = useNavigate();
+
+  const handleDeleteCart = async () => {
+    try {
+      await axios.delete(`${import.meta.env.VITE_API_URL}/api/v1/cart/clear`, {
+        withCredentials: true,
+      });
+      navigate("/profile");
+    } catch (error) {
+      console.error("Failed to remove item:", error);
+    }
+  };
   return (
     <div className="min-h-screen bg-linear-to-br from-green-50 to-blue-50 flex items-center justify-center p-4">
       <div className="max-w-2xl w-full">
@@ -19,10 +31,8 @@ export default function PaymentSuccess() {
           <div className="p-8">
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
               <button
-                onClick={() => {
-                  navigate("/");
-                }}
-                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                onClick={handleDeleteCart}
+                className="flex items-center justify-center gap-2 px-4 py-3 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium cursor-pointer"
               >
                 <Home className="w-5 h-5" />
                 Kembali

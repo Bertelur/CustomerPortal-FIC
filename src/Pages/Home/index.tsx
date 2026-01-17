@@ -1,5 +1,4 @@
 import ProductCarousel from "../../Components/Organisms/Carousel";
-import { productData } from "../../Data/productData";
 const Home = () => {
   return (
     <div>
@@ -10,7 +9,7 @@ const Home = () => {
           className="w-full h-full object-cover"
         />
       </div>
-      <ProductCarousel title="Produk Terlaris" products={productData} />
+      <ProductCarousel title="Produk Terlaris" />
     </div>
   );
 };

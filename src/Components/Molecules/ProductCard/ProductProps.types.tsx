@@ -5,14 +5,19 @@ export type UnitType = {
 };
 
 export type ProductProps = {
-  id: number;
+  id: string;
   name: string;
-  image: string;
+  imageType?: string;
+  imageUrl?: string;
   stock: number;
-  units: UnitType[];
+  price: number;
+  sku: string;
+  description: string;
+  category: string;
+  status: string;
 };
 
 export interface ProductCardProps {
   product: ProductProps;
-  onAddToCart?: (unit: UnitType) => void;
+  onAddToCart: () => void;
 }

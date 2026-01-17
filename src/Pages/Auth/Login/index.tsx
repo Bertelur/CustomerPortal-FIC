@@ -6,7 +6,7 @@ import { Button } from "../../../Components/Atoms/Button";
 const Login = () => {
   const navigate = useNavigate();
   return (
-    <div className="absolute top-[25%] left-[40%] flex items-center justify-center p-4">
+    <div className="flex items-center justify-center p-4 h-[90vh]">
       <div className="max-w-md w-full">
         {/* Logo and Header */}
         <div className="text-center mb-8">

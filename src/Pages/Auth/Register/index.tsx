@@ -6,7 +6,7 @@ import { Button } from "../../../Components/Atoms/Button";
 const Register = () => {
   const navigate = useNavigate();
   return (
-    <div className="absolute top-[20%] left-[40%]  flex items-center justify-center p-4">
+    <div className="h-[90vh] flex items-center justify-center p-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
           <div className="inline-flex items-center justify-center w-16 h-16 bg-purple-600 rounded-2xl mb-4">
