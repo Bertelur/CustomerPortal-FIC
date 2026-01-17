@@ -6,7 +6,11 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { TbArrowLeft, TbArrowRight } from "react-icons/tb";
 import ProductCard from "../../Molecules/ProductCard";
-import type { ProductProps } from "../../Molecules/ProductCard/ProductProps.types";
+import type {
+  ProductProps,
+  UnitType,
+} from "../../Molecules/ProductCard/ProductProps.types";
+import { Button } from "../../Atoms/Button";
 import axios from "axios";
 
 interface ProductCarouselProps {
@@ -21,7 +25,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
     const fetchProducts = async () => {
       try {
         const res = await axios.get<{ data: ProductProps[] }>(
-          `${import.meta.env.VITE_API_URL}/api/v1/products`
+          `${import.meta.env.VITE_API_URL}/api/v1/products`,
         );
 
         setDataProduct(res.data.data);
@@ -42,7 +46,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
       const res = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
         payload,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       console.log("Add to cart success:", res.data);
@@ -56,12 +60,20 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
       <div className="flex justify-between items-center mb-5">
         <h2 className="text-2xl font-semibold">{title}</h2>
         <div className="flex gap-3 max-sm:hidden">
-          <button onClick={() => swiperRef.current?.slidePrev()}>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => swiperRef.current?.slidePrev()}
+          >
             <TbArrowLeft size={28} />
-          </button>
-          <button onClick={() => swiperRef.current?.slideNext()}>
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => swiperRef.current?.slideNext()}
+          >
             <TbArrowRight size={28} />
-          </button>
+          </Button>
         </div>
       </div>
 

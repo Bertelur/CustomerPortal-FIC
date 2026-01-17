@@ -3,11 +3,12 @@ import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeClosed, Lock, Mail } from "lucide-react";
+import { Eye, EyeClosed, Lock, Mail, Loader2 } from "lucide-react";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
   const [showPassword, setShowPassword] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -16,7 +17,9 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
 
+    setIsSubmitting(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/auth/login`,
@@ -38,14 +41,13 @@ const LoginForm = () => {
       } else {
         console.error("LOGIN ERROR: Unknown error occurred");
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 flex flex-col items-center justify-center "
-    >
+    <form onSubmit={handleSubmit} className="w-full space-y-5" noValidate>
       <InputField
         Icon={Mail}
         label="Email"
@@ -53,6 +55,7 @@ const LoginForm = () => {
         type="email"
         onChange={handleChange}
       />
+
       <InputField
         label="Password"
         name="password"
@@ -63,9 +66,25 @@ const LoginForm = () => {
         onChange={handleChange}
       />
 
-      <Button type="submit" className="w-80">
-        Login
+      <Button
+        type="submit"
+        className="w-full h-11 text-sm font-medium"
+        disabled={isSubmitting}
+        aria-busy={isSubmitting}
+      >
+        {isSubmitting ? (
+          <span className="inline-flex items-center justify-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" aria-hidden="true" />
+            Logging in...
+          </span>
+        ) : (
+          "Login"
+        )}
       </Button>
+
+      <p className="sr-only" role="status" aria-live="polite">
+        {isSubmitting ? "Logging in. Please wait." : ""}
+      </p>
     </form>
   );
 };
