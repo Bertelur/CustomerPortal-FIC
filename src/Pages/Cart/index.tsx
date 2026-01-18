@@ -8,22 +8,35 @@ import type { UserProfileProps } from "../../Components/Organisms/UserProfile/Us
 import { Truck } from "lucide-react";
 import ShippingAddressForm from "../../Components/Organisms/ShippingAddress";
 
+export type AddressResult = {
+  label: string;
+  lat: number;
+  lon: number;
+};
+
 export default function CartPage() {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
   const [dataUser, setDataUser] = useState<UserProfileProps | null>(null);
   const [shipping, setShipping] = useState(0);
-  const [shippingAddress, setShippingAddress] = useState<string>("");
-  const [error, setError] = useState<string>("");
-  const [distance, setDistance] = useState<number>(0);
+  const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
+    null,
+  );
+  const [error, setError] = useState("");
+  const [distance, setDistance] = useState(0);
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
-
+  // ================= FETCH DATA =================
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
     setDataUser(user);
+
+    if (user?.address) {
+      setShippingAddress(user.address);
+      setDeliveryMethod("delivery"); // opsional: langsung set ke delivery
+    }
 
     const fetchCart = async () => {
       try {
@@ -46,60 +59,28 @@ export default function CartPage() {
     if (deliveryMethod === "pickup") {
       setShipping(0);
       setDistance(0);
-      setShippingAddress("");
+      setShippingAddress(null);
       setError("");
     }
   }, [deliveryMethod]);
 
+  // ================= HITUNG ONGKIR SAAT PILIH ALAMAT =================
   useEffect(() => {
     if (!shippingAddress || deliveryMethod !== "delivery") return;
 
-    const timeout = setTimeout(() => {
-      calculateShippingFromAddress(shippingAddress);
-    }, 800);
+    const t = setTimeout(() => {
+      calculateShippingFromCoord(shippingAddress.lat, shippingAddress.lon);
+    }, 500);
 
-    return () => clearTimeout(timeout);
+    return () => clearTimeout(t);
   }, [shippingAddress, deliveryMethod]);
 
-  useEffect(() => {
-    if (!dataUser?.address) return;
-
-    calculateShippingFromAddress(dataUser.address);
-  }, [dataUser]);
-
-  async function geocodeAddress(address: string) {
-    const url = `https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(
-      address,
-    )}`;
-
-    const res = await fetch(url, {
-      headers: {
-        Accept: "application/json",
-        "User-Agent": "your-app-name",
-      },
-    });
-
-    const data = await res.json();
-
-    if (!data || data.length === 0) {
-      throw new Error("Alamat tidak ditemukan");
-    }
-
-    return {
-      lat: parseFloat(data[0].lat),
-      lon: parseFloat(data[0].lon),
-    };
-  }
-
-  const calculateShippingFromAddress = async (address: string) => {
+  // ================= HITUNG ONGKIR =================
+  const calculateShippingFromCoord = async (lat: number, lon: number) => {
     try {
-      const userCoord = await geocodeAddress(address);
-
-      // lokasi toko
-      // -6.899532045474016, 107.64452844171045
       const store = { lat: -6.901499, lon: 107.647224 };
 
-      const url = `https://router.project-osrm.org/route/v1/driving/${store.lon},${store.lat};${userCoord.lon},${userCoord.lat}?overview=false`;
+      const url = `https://router.project-osrm.org/route/v1/driving/${store.lon},${store.lat};${lon},${lat}?overview=false`;
 
       const res = await axios.get(url);
 
@@ -108,32 +89,33 @@ export default function CartPage() {
       const distanceMeter = res.data.routes[0].distance;
       const distanceKm = Number((distanceMeter / 1000).toFixed(2));
       setDistance(distanceKm);
+
       let cost = 0;
       if (distanceKm <= 5) cost = 5000;
       else if (distanceKm <= 10) cost = 10000;
       else if (distanceKm <= 15) cost = 15000;
       else if (distanceKm <= 20) cost = 20000;
-      else cost = 20000 + (distanceKm - 20) * 2000; // opsional jika >20 km
+      else cost = 20000 + (distanceKm - 20) * 2000;
 
       setShipping(cost);
       setError("");
-    } catch (err) {
-      console.error("Gagal hitung shipping:", err);
+    } catch {
       setError("Alamat tidak ditemukan");
       setShipping(0);
       setDistance(0);
     }
   };
 
+  // ================= CART HANDLER =================
   const onRemove = async (productId: string) => {
     try {
       await axios.delete(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items/${productId}`,
         { withCredentials: true },
       );
+
       setCart((prev) => {
         if (!prev) return prev;
-
         const newItems = prev.items.filter(
           (item) => item.productId !== productId,
         );
@@ -179,16 +161,27 @@ export default function CartPage() {
       console.error("Failed to update quantity", error);
     }
   };
-
-  const handleAddressChange = (value: string) => {
+  const handleAddressChange = (value: AddressResult) => {
     setShippingAddress(value);
+
+    const userStr = localStorage.getItem("user");
+    if (!userStr) return;
+
+    const user = JSON.parse(userStr);
+
+    const updatedUser = {
+      ...user,
+      address: value, // simpan full object (label, lat, lon)
+    };
+
+    localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
   if (loading) return <p className="p-8">Loading...</p>;
   if (!cart || cart.items.length === 0) return <EmptyCart />;
 
   return (
-    <div className=" bg-gray-50 p-2 lg:p-8">
+    <div className="bg-gray-50 p-2 lg:p-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="sm:col-span-2 space-y-8">
           <div className="lg:sticky top-14 space-y-8 bg-white">
@@ -202,8 +195,6 @@ export default function CartPage() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    name="deliveryMethod"
-                    value="pickup"
                     checked={deliveryMethod === "pickup"}
                     onChange={() => setDeliveryMethod("pickup")}
                   />
@@ -213,8 +204,6 @@ export default function CartPage() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
-                    name="deliveryMethod"
-                    value="delivery"
                     checked={deliveryMethod === "delivery"}
                     onChange={() => setDeliveryMethod("delivery")}
                   />
@@ -222,6 +211,7 @@ export default function CartPage() {
                 </label>
               </div>
             </div>
+
             {deliveryMethod === "delivery" && (
               <ShippingAddressForm
                 err={error}
@@ -231,6 +221,7 @@ export default function CartPage() {
               />
             )}
           </div>
+
           <CartList
             items={cart.items}
             onRemove={onRemove}

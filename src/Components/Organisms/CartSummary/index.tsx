@@ -33,8 +33,6 @@ export default function CartSummary({
       );
 
       const data = res.data.data.payment;
-      console.log(res);
-      console.log(data.data);
 
       if (!data.invoiceUrl) {
         throw new Error("Invoice URL tidak ditemukan");

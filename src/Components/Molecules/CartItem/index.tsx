@@ -23,12 +23,14 @@ export default function CartItem({
           alt={name}
           className="h-20 w-20 rounded-lg object-cover border"
         />
-        <div>
-          <p className="font-medium">{name}</p>
-          <p className="text-sm text-gray-500">
-            Rp {price.toLocaleString("id-ID")}
-          </p>
-        </div>
+        {price && (
+          <div>
+            <p className="font-medium">{name}</p>
+            <p className="text-sm text-gray-500">
+              Rp {price.toLocaleString("id-ID")}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
