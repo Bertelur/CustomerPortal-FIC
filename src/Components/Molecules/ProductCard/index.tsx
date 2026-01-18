@@ -35,7 +35,7 @@ export default function ProductCard({
             loading="lazy"
           />
 
-          <h2 className="line-clamp-2 text-sm sm:text-lg font-semibold mt-4 sm:h-12">
+          <h2 className="line-clamp-2 text-sm sm:text-lg font-semibold mt-4 sm:h-14">
             {product.name}
           </h2>
 

@@ -95,7 +95,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
           1280: { slidesPerView: 5, spaceBetween: 20 },
         }}
         onBeforeInit={(swiper) => (swiperRef.current = swiper)}
-        className="overflow-visible!"
+        className=""
       >
         {dataProduct.map((product) => (
           <SwiperSlide key={product.id} className="h-auto">

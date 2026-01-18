@@ -74,7 +74,7 @@ const RegisterForm = () => {
       );
 
       toast.success("Registrasi berhasil!", { id: tId });
-      navigate("/");
+      navigate("/login");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const msg =
@@ -93,7 +93,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-5" noValidate>
+    <form onSubmit={handleSubmit} className="w-full space-y-4" noValidate>
       <InputField
         Icon={User}
         label="Username"

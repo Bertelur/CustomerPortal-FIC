@@ -13,14 +13,15 @@ export default function CartList({
         <IoCart size={28} className="text-orange-600" />
         <p>Cart</p>
       </div>
-
-      {items.map((item) => (
-        <CartItem
-          {...item}
-          onRemove={() => onRemove(item.productId)}
-          onQuantityChange={onQuantityChange}
-        />
-      ))}
+      <div className="space-y-3">
+        {items.map((item) => (
+          <CartItem
+            {...item}
+            onRemove={() => onRemove(item.productId)}
+            onQuantityChange={onQuantityChange}
+          />
+        ))}
+      </div>
     </div>
   );
 }

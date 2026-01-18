@@ -7,7 +7,7 @@ const Register = () => {
   const navigate = useNavigate();
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center px-4 py-10">
+    <div className="h-[90vh] w-full flex items-center justify-center px-4 py-10">
       <div className="w-full max-w-md">
         <div className="text-center mb-6">
           <div className="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-xl border bg-blue-600">
