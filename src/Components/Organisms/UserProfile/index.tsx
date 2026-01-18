@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import type { UserProfileProps } from "./UserProfile.types";
 import InputField from "../../Molecules/InputField";

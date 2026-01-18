@@ -19,5 +19,5 @@ export type ProductProps = {
 
 export interface ProductCardProps {
   product: ProductProps;
-  onAddToCart: () => void;
+  onAddToCart?: (product: ProductProps) => Promise<void> | void;
 }

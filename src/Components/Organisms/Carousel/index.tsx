@@ -6,10 +6,7 @@ import "swiper/css/navigation";
 import "swiper/css/pagination";
 import { TbArrowLeft, TbArrowRight } from "react-icons/tb";
 import ProductCard from "../../Molecules/ProductCard";
-import type {
-  ProductProps,
-  UnitType,
-} from "../../Molecules/ProductCard/ProductProps.types";
+import type { ProductProps } from "../../Molecules/ProductCard/ProductProps.types";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
 
@@ -27,7 +24,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
         const res = await axios.get<{ data: ProductProps[] }>(
           `${import.meta.env.VITE_API_URL}/api/v1/products`,
         );
-
+        console.log(res);
         setDataProduct(res.data.data);
       } catch (error) {
         console.error("Failed to fetch products:", error);

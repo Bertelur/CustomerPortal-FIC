@@ -79,7 +79,7 @@ export default function CartSummary({
       <Button
         onClick={handleCheckout}
         disabled={loading}
-        className="mt-6 w-full bg-blue-600 py-3 text-white"
+        className="mt-6 w-full bg-blue-600 hover:bg-blue-700 py-3 text-white"
       >
         {loading ? "Memproses..." : "Bayar Sekarang"}
       </Button>

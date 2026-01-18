@@ -188,7 +188,7 @@ export default function CartPage() {
   if (!cart || cart.items.length === 0) return <EmptyCart />;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-2 lg:p-8">
+    <div className=" bg-gray-50 p-2 lg:p-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="sm:col-span-2 space-y-8">
           <div className="lg:sticky top-14 space-y-8 bg-white">

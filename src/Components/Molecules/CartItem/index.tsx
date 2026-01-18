@@ -1,3 +1,4 @@
+import { TbTrash } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 import QuantityControl from "../QuantityControl";
 import type { CartItemProps } from "./CartItem.types";
@@ -14,7 +15,7 @@ export default function CartItem({
   return (
     <div
       key={productId}
-      className="flex flex-col md:flex-row md:justify-between p-4 border border-gray-200 rounded-xl hover:border-orange-300 transition-colors"
+      className="flex flex-col md:flex-row md:justify-between p-4 border border-gray-200 rounded-xl transition-colors"
     >
       <div className="flex items-center gap-4">
         <img
@@ -36,11 +37,8 @@ export default function CartItem({
           value={quantity}
           onChange={(val) => onQuantityChange(productId, val)}
         />
-        <Button
-          onClick={onRemove}
-          className="text-red-500 bg-white hover:bg-gray-100"
-        >
-          Hapus
+        <Button onClick={onRemove} className=" bg-red-600 hover:bg-red-700">
+          <TbTrash />
         </Button>
       </div>
     </div>
