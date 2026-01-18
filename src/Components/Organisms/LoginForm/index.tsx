@@ -53,6 +53,7 @@ const LoginForm = () => {
         label="Email"
         name="email"
         type="email"
+        value={form.email}
         onChange={handleChange}
       />
 
@@ -60,6 +61,7 @@ const LoginForm = () => {
         label="Password"
         name="password"
         type={showPassword ? "text" : "password"}
+        value={form.password}
         Icon={Lock}
         IconLeading={showPassword ? EyeClosed : Eye}
         togglePassword={() => setShowPassword(!showPassword)}

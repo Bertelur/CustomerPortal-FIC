@@ -12,9 +12,10 @@ import {
 import { Loader2 } from "lucide-react";
 
 export default function ProductCard({ product, onAddToCart }: ProductCardProps) {
-  const selectId = useId();
-  const priceId = useId();
-  const statusId = useId();
+  const uid = useId().replace(/[:]/g, "");
+  const selectId = `unit-${uid}`;
+  const priceId = `price-${uid}`;
+  const statusId = `status-${uid}`;
 
   const [selectedIndex, setSelectedIndex] = useState(0);
   const [isAdding, setIsAdding] = useState(false);
@@ -31,42 +32,61 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
     }
   };
 
-  return (
-    <Card className="w-full overflow-hidden">
-      <CardContent className="p-4">
-        <div className="space-y-4">
-          {/* Image */}
-          <div className="aspect-4/3 w-full overflow-hidden rounded-lg bg-muted">
-            <img
-              src={product.image}
-              alt={product.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
+  const getUnitHelperText = () => {
+    const tray = product.units.find((u) => /tray/i.test(u.unit));
+    const karton = product.units.find((u) => /(karton|carton)/i.test(u.unit));
 
-          {/* Title */}
-          <h2 className="line-clamp-2 text-base font-semibold leading-snug">
+    if (!tray || !karton) return null;
+
+    const trayLabel = "Tray";
+    const kartonLabel = "Karton";
+
+    if (selectedUnit.unit === karton.unit) {
+      return `Info: 1 ${kartonLabel} = ${karton.unitValue} ${trayLabel}`;
+    }
+
+    if (selectedUnit.unit === tray.unit) {
+      const value = 1 / karton.unitValue;
+      const formatted =
+        value >= 1 ? String(value) : value.toFixed(2).replace(/\.00$/, "");
+      return `Info: 1 ${trayLabel} = ${formatted} ${kartonLabel}`;
+    }
+
+    return null;
+  };
+
+  const helperText = getUnitHelperText();
+
+  return (
+    <Card>
+      <CardContent className="p-4">
+        <div className="space-y-2">
+          <img
+            src={product.image}
+            alt={product.name}
+            className="inset-0 w-full h-32 object-cover rounded-lg"
+            loading="lazy"
+          />
+
+          <h2 className="line-clamp-2 text-sm sm:text-lg font-semibold mt-4">
             {product.name}
           </h2>
 
-          {/* Controls + Price */}
-          <div className="flex flex-col items-end justify-between gap-3">
-            <div className="text-right">
-              <p className="text-xs text-muted-foreground">Harga</p>
+          <div className="flex flex-col items-start justify-between gap-3">
+            <div className="min-w-0">
               <p
                 id={priceId}
-                className="text-base font-semibold text-orange-600"
+                className="mt-0.5 text-base font-semibold text-orange-600"
                 aria-live="polite"
               >
                 Rp {selectedUnit.price.toLocaleString("id-ID")}
               </p>
             </div>
 
-            <div className="min-w-0">
+            <div className="w-full shrink-0">
               <label
                 htmlFor={selectId}
-                className="mb-1 block text-xs font-medium text-muted-foreground"
+                className="mb-1 block text-sm font-medium text-muted-foreground"
               >
                 Unit
               </label>
@@ -79,7 +99,7 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                 <SelectTrigger
                   id={selectId}
                   aria-describedby={priceId}
-                  className="h-10 w-[160px]"
+                  className="h-10 w-full"
                 >
                   <SelectValue placeholder="Pilih unit" />
                 </SelectTrigger>
@@ -92,17 +112,22 @@ export default function ProductCard({ product, onAddToCart }: ProductCardProps) 
                   ))}
                 </SelectContent>
               </Select>
+
+              {helperText && (
+                <p className="mt-1 text-sm text-muted-foreground">
+                  {helperText}
+                </p>
+              )}
             </div>
           </div>
 
-          {/* SR-only status for add-to-cart */}
           <p id={statusId} className="sr-only" role="status" aria-live="polite">
             {isAdding ? "Menambahkan ke keranjang..." : ""}
           </p>
         </div>
       </CardContent>
 
-      <CardFooter className="p-4 pt-0">
+      <CardFooter className="px-4 pb-4 pt-2">
         <Button
           type="button"
           onClick={handleAdd}
