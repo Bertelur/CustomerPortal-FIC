@@ -2,69 +2,142 @@ import { useState } from "react";
 import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
+import { Eye, EyeClosed, Lock, Mail, User } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { toast } from "sonner";
 
 const RegisterForm = () => {
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  const navigate = useNavigate();
   const [form, setForm] = useState({
-    nama: "",
+    username: "",
     email: "",
     password: "",
-    confPassword: "",
   });
 
+  const validatePassword = (password: string) => {
+    if (!password) return "Password wajib diisi";
+    if (password.length < 8) return "Password minimal 8 karakter";
+    if (!/[A-Z]/.test(password)) return "Password harus mengandung huruf besar";
+    if (!/[a-z]/.test(password)) return "Password harus mengandung huruf kecil";
+    if (!/\d/.test(password)) return "Password harus mengandung angka";
+    if (!/[^A-Za-z\d]/.test(password))
+      return "Password harus mengandung simbol";
+    return null;
+  };
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "password") {
+      setPasswordError(validatePassword(value));
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (isSubmitting) return;
+
+    if (!form.username.trim()) {
+      toast.warning("Username wajib diisi");
+      return;
+    }
+    if (!form.email.trim()) {
+      toast.warning("Email wajib diisi");
+      return;
+    }
+
+    const error = validatePassword(form.password);
+    if (error) {
+      setPasswordError(error);
+      toast.warning(error);
+      return;
+    }
+
+    setIsSubmitting(true);
+
+    const tId = toast.loading("Mendaftarkan akun...");
+
     try {
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/api/users/register`,
+      await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/auth/register`,
         {
-          nama: form.nama,
           email: form.email,
+          username: form.username,
           password: form.password,
-          confPassword: form.confPassword,
-        }
+        },
+        { withCredentials: true },
       );
-      console.log("RESPONSE:", response.data);
-    } catch (error: unknown) {
-      if (axios.isAxiosError(error)) {
-        console.error("REGISTER ERROR:", error.response?.data || error.message);
-      } else if (error instanceof Error) {
-        console.error("REGISTER ERROR:", error.message);
+
+      toast.success("Registrasi berhasil!", { id: tId });
+      navigate("/login");
+    } catch (err: unknown) {
+      if (axios.isAxiosError(err)) {
+        const msg =
+          (err.response?.data as any)?.message ||
+          (err.response?.data as any)?.error ||
+          err.message ||
+          "Registrasi gagal";
+
+        toast.error(msg, { id: tId });
       } else {
-        console.error("REGISTER ERROR: Unknown error occurred");
+        toast.error("Registrasi gagal", { id: tId });
       }
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
   return (
-    <form
-      onSubmit={handleSubmit}
-      className="space-y-4 flex flex-col items-center justify-center h-[90vh]"
-    >
-      <InputField label="Name" name="nama" onChange={handleChange} />
+    <form onSubmit={handleSubmit} className="w-full space-y-4" noValidate>
       <InputField
+        Icon={User}
+        label="Username"
+        name="username"
+        value={form.username}
+        onChange={handleChange}
+      />
+
+      <InputField
+        Icon={Mail}
         label="Email"
         name="email"
         type="email"
+        value={form.email}
         onChange={handleChange}
       />
+
       <InputField
         label="Password"
         name="password"
-        type="password"
+        type={showPassword ? "text" : "password"}
+        Icon={Lock}
+        IconLeading={showPassword ? EyeClosed : Eye}
+        togglePassword={() => setShowPassword(!showPassword)}
+        value={form.password}
         onChange={handleChange}
       />
-      <InputField
-        label="Confirm Password"
-        name="confPassword"
-        type="password"
-        onChange={handleChange}
-      />
-      <Button type="submit" className="w-80">
-        Register
+
+      {passwordError ? (
+        <p className="text-sm text-destructive">{passwordError}</p>
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Gunakan minimal 8 karakter, huruf besar, huruf kecil, angka, dan
+          simbol
+        </p>
+      )}
+
+      <Button
+        type="submit"
+        className="w-full h-11 text-sm font-medium"
+        disabled={isSubmitting}
+        aria-busy={isSubmitting}
+      >
+        {isSubmitting ? "Mendaftar..." : "Register"}
       </Button>
     </form>
   );

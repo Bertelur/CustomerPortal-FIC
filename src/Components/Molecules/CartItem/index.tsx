@@ -1,45 +1,46 @@
+import { TbTrash } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 import QuantityControl from "../QuantityControl";
 import type { CartItemProps } from "./CartItem.types";
 
 export default function CartItem({
+  productId,
   name,
   price,
-  image,
+  imageUrl,
   quantity,
-  stock,
-  unit,
-  onQuantityChange,
   onRemove,
+  onQuantityChange,
 }: CartItemProps) {
   return (
-    <div className="flex items-center justify-between border-b py-4 last:border-none">
+    <div
+      key={productId}
+      className="flex flex-col md:flex-row md:justify-between p-4 border border-gray-200 rounded-xl transition-colors"
+    >
       <div className="flex items-center gap-4">
         <img
-          src={image}
+          src={imageUrl}
           alt={name}
-          className="h-20 w-20 rounded-lg object-cover"
+          className="h-20 w-20 rounded-lg object-cover border"
         />
-        <div>
-          <p className="font-medium">{name}</p>
-          <p>{unit}</p>
-          <p className="text-sm text-gray-500">
-            Rp {price.toLocaleString("id-ID")}
-          </p>
-        </div>
+        {price && (
+          <div>
+            <p className="font-medium">{name}</p>
+            <p className="text-sm text-gray-500">
+              Rp {price.toLocaleString("id-ID")}
+            </p>
+          </div>
+        )}
       </div>
 
       <div className="flex items-center gap-4">
         <QuantityControl
-          stock={stock}
+          stock={100}
           value={quantity}
-          onChange={(value) => onQuantityChange(value)}
+          onChange={(val) => onQuantityChange(productId, val)}
         />
-        <Button
-          onClick={onRemove}
-          className="text-red-500 bg-white hover:bg-gray-100"
-        >
-          Hapus
+        <Button onClick={onRemove} className=" bg-red-600 hover:bg-red-700">
+          <TbTrash />
         </Button>
       </div>
     </div>

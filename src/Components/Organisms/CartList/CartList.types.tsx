@@ -1,16 +1,21 @@
 export type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
+  productId: string;
   quantity: number;
-  stock: number;
-  unit: string;
-  unitValue: number;
+  name: string;
+  sku: string;
+  price: number;
+  imageUrl: string;
 };
 
-export type CartListProps = {
+export type Cart = {
+  userId: string;
   items: CartItem[];
-  onQuantityChange: (id: number, value: number) => void;
-  onRemove: (id: number, unit: string) => void;
+  totalQuantity: number;
+  totalAmount: number;
 };
+
+export interface CartListProps {
+  items: CartItem[];
+  onRemove: (productId: string) => void;
+  onQuantityChange: (productId: string, value: number) => void;
+}

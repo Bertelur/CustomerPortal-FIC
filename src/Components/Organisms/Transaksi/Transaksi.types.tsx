@@ -1,31 +1,45 @@
 import type { IconType } from "react-icons";
 
-export type TransactionStatus = "PENDING" | "PAID" | "SETTLED";
+export type TransactionStatus = "paid" | "pending" | "expired" | "failed";
 
-export type StatusConfig = {
+export interface StatusConfig {
   label: string;
   icon: IconType;
   color: string;
   bgColor: string;
   borderColor: string;
-};
+}
 
-export type InvoiceItem = {
+export interface InvoiceItem {
   name: string;
-  quantity: number;
   price: number;
-};
+  quantity: number;
+
+  productId: string;
+  productIdType: "objectId" | string;
+
+  sku: string;
+}
 
 export interface DataTransaction {
-  id: number;
-  productName: string;
+  id: string;
+  userId: string;
+
   amount: number;
+  currency: string;
+
   status: TransactionStatus;
+
+  paymentMethod: string;
+  paymentExternalId: string;
+  xenditInvoiceId: string;
+
+  invoiceUrl: string;
+
+  customer: any | null;
+  items: InvoiceItem[];
+
   createdAt: string;
-  external_id: string;
-  created: string;
-  items?: InvoiceItem[];
-  payment_method?: string;
-  bank_code?: string;
-  invoice_url?: string;
+  updatedAt: string;
+  paidAt: string | null;
 }

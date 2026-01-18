@@ -1,3 +1,5 @@
+import { Button } from "../../Atoms/Button";
+
 export default function EmptyCart() {
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 p-6">
@@ -12,12 +14,12 @@ export default function EmptyCart() {
           Kamu belum menambahkan produk ke keranjang.
         </p>
 
-        <button
+        <Button
           onClick={() => (window.location.href = "/")}
-          className="bg-blue-600 text-white px-6 py-3"
+          className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3"
         >
           Mulai Belanja
-        </button>
+        </Button>
       </div>
     </div>
   );

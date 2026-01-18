@@ -4,7 +4,8 @@ export type ApiResponse<T> = {
 };
 
 export interface UserProfileProps {
-  _id: string;
-  nama: string;
-  email: string;
+  _id?: string;
+  username?: string;
+  email?: string;
+  address?: string;
 }

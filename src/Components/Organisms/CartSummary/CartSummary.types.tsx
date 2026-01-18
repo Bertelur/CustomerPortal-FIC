@@ -1,14 +1,7 @@
-export type CartItem = {
-  id: number;
-  name: string;
-  price: number;
-  image: string;
-  quantity: number;
-};
-export type CardSummaryProps = {
+import type { CartItem } from "../CartList/CartList.types";
+
+export interface CartSummaryProps {
   subtotal: number;
   shipping: number;
-  customerName: string;
-  customerEmail: string;
-  cart?: CartItem[];
-};
+  cart: CartItem[];
+}
