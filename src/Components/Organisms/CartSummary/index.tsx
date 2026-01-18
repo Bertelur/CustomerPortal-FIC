@@ -1,42 +1,46 @@
 import { useState } from "react";
-import type { CardSummaryProps } from "./CartSummary.types";
+import type { CartSummaryProps } from "./CartSummary.types";
 import axios from "axios";
 import { Button } from "../../Atoms/Button";
 
 export default function CartSummary({
-  customerEmail,
-  customerName,
   subtotal,
   shipping,
   cart,
-}: CardSummaryProps) {
+}: CartSummaryProps) {
   const [loading, setLoading] = useState(false);
+
   const handleCheckout = async () => {
-    if (!customerName || !customerEmail) {
-      alert("Data checkout tidak lengkap");
+    if (!cart || cart.length === 0) {
+      alert("Cart kosong");
       return;
     }
 
     setLoading(true);
 
     try {
+      const payload = {
+        successRedirectUrl: `${window.location.origin}/success`,
+        failureRedirectUrl: `${window.location.origin}/failure`,
+        productIds: cart.map((item) => item.productId),
+        forceNew: true,
+      };
+
       const res = await axios.post(
-        `${import.meta.env.VITE_API_URL}/create-invoice`,
-        {
-          amount: subtotal + shipping,
-          customerName,
-          customerEmail,
-          cart,
-        }
+        `${import.meta.env.VITE_API_URL}/api/v1/cart/checkout`,
+        payload,
+        { withCredentials: true },
       );
 
-      const data = res.data;
+      const data = res.data.data.payment;
+      console.log(res);
+      console.log(data.data);
 
-      if (!data.invoice_url) {
+      if (!data.invoiceUrl) {
         throw new Error("Invoice URL tidak ditemukan");
       }
-      localStorage.removeItem("cart");
-      window.location.href = data.invoice_url;
+
+      window.location.href = data.invoiceUrl;
     } catch (err: unknown) {
       console.error("Checkout error:", err);
 
@@ -47,16 +51,15 @@ export default function CartSummary({
       } else {
         alert("Terjadi kesalahan");
       }
-
+    } finally {
       setLoading(false);
     }
   };
 
-  const total = subtotal + shipping;
-
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm h-fit">
+    <div className="bg-white rounded-xl p-6 shadow-sm h-fit lg:sticky top-20 mt-4 z-10 ">
       <h2 className="text-xl font-semibold mb-4">Shopping Summary</h2>
+
       <div className="space-y-3 text-sm">
         <div className="flex justify-between">
           <span>Subtotal</span>
@@ -69,16 +72,16 @@ export default function CartSummary({
         <hr />
         <div className="flex justify-between font-semibold text-base">
           <span>Total</span>
-          <span>Rp {total.toLocaleString("id-ID")}</span>
+          <span>Rp {(subtotal + shipping).toLocaleString("id-ID")}</span>
         </div>
       </div>
 
       <Button
         onClick={handleCheckout}
         disabled={loading}
-        className="mt-6 w-full bg-blue-600 py-3 text-white"
+        className="mt-6 w-full bg-blue-600 hover:bg-blue-700 py-3 text-white"
       >
-        {loading ? "Memproses" : "Bayar Sekarang"}
+        {loading ? "Memproses..." : "Bayar Sekarang"}
       </Button>
     </div>
   );

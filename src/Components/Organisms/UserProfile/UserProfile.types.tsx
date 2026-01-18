@@ -7,4 +7,5 @@ export interface UserProfileProps {
   _id?: string;
   username?: string;
   email?: string;
+  address?: string;
 }

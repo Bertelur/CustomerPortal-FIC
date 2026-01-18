@@ -24,7 +24,8 @@ const RegisterForm = () => {
     if (!/[A-Z]/.test(password)) return "Password harus mengandung huruf besar";
     if (!/[a-z]/.test(password)) return "Password harus mengandung huruf kecil";
     if (!/\d/.test(password)) return "Password harus mengandung angka";
-    if (!/[^A-Za-z\d]/.test(password)) return "Password harus mengandung simbol";
+    if (!/[^A-Za-z\d]/.test(password))
+      return "Password harus mengandung simbol";
     return null;
   };
 
@@ -69,11 +70,11 @@ const RegisterForm = () => {
           username: form.username,
           password: form.password,
         },
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       toast.success("Registrasi berhasil!", { id: tId });
-      navigate("/");
+      navigate("/login");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
         const msg =
@@ -92,7 +93,7 @@ const RegisterForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="w-full space-y-5" noValidate>
+    <form onSubmit={handleSubmit} className="w-full space-y-4" noValidate>
       <InputField
         Icon={User}
         label="Username"
@@ -125,7 +126,8 @@ const RegisterForm = () => {
         <p className="text-sm text-destructive">{passwordError}</p>
       ) : (
         <p className="text-sm text-muted-foreground">
-          Gunakan minimal 8 karakter, huruf besar, huruf kecil, angka, dan simbol
+          Gunakan minimal 8 karakter, huruf besar, huruf kecil, angka, dan
+          simbol
         </p>
       )}
 

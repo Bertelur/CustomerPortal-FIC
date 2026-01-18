@@ -14,11 +14,12 @@ export default function QuantityControl({
         onChange={(e) => {
           const val = Number(e.target.value);
           if (!Number.isNaN(val)) {
-            onChange(val);
+            onChange?.(val); // ✅ trigger ke atas
           }
         }}
-        className="w-14 text-center border rounded"
+        className="w-10 text-center border rounded"
       />
+      /Kg
     </div>
   );
 }

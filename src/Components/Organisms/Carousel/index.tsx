@@ -1,62 +1,53 @@
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
 import { TbArrowLeft, TbArrowRight } from "react-icons/tb";
 import ProductCard from "../../Molecules/ProductCard";
-import type {
-  ProductProps,
-  UnitType,
-} from "../../Molecules/ProductCard/ProductProps.types";
+import type { ProductProps } from "../../Molecules/ProductCard/ProductProps.types";
 import { Button } from "../../Atoms/Button";
+import axios from "axios";
 
 interface ProductCarouselProps {
   title: string;
-  products: ProductProps[];
 }
 
-interface CartItem {
-  id: number;
-  name: string;
-  image: string;
-  stock: number;
-  price: number;
-  quantity: number;
-  unit: string;
-  unitValue: number;
-}
-
-export default function ProductCarousel({ title, products }: ProductCarouselProps) {
+export default function ProductCarousel({ title }: ProductCarouselProps) {
+  const [dataProduct, setDataProduct] = useState<ProductProps[]>([]);
   const swiperRef = useRef<SwiperType | null>(null);
 
-  const CART_KEY = "cart";
-  const getCart = (): CartItem[] => {
-    const data = localStorage.getItem(CART_KEY);
-    return data ? JSON.parse(data) : [];
-  };
+  useEffect(() => {
+    const fetchProducts = async () => {
+      try {
+        const res = await axios.get<{ data: ProductProps[] }>(
+          `${import.meta.env.VITE_API_URL}/api/v1/products`,
+        );
+        console.log(res);
+        setDataProduct(res.data.data);
+      } catch (error) {
+        console.error("Failed to fetch products:", error);
+      }
+    };
 
-  const addToCart = (product: ProductProps, unit: UnitType) => {
-    const cart = getCart();
-
-    const existing = cart.find(
-      (item) => item.id === product.id && item.unit === unit.unit
-    );
-
-    if (existing) existing.quantity += 1;
-    else {
-      cart.push({
-        id: product.id,
-        name: product.name,
-        image: product.image,
-        stock: product.stock,
-        unit: unit.unit,
-        unitValue: unit.unitValue,
-        price: unit.price,
+    fetchProducts();
+  }, []);
+  const addToCart = async (product: ProductProps) => {
+    try {
+      const payload = {
+        productId: product.id,
         quantity: 1,
-      });
-    }
+      };
 
-    localStorage.setItem(CART_KEY, JSON.stringify(cart));
+      const res = await axios.post(
+        `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
+        payload,
+        { withCredentials: true },
+      );
+
+      console.log("Add to cart success:", res.data);
+    } catch (error) {
+      console.error("Add to cart failed:", error);
+    }
   };
 
   return (
@@ -104,15 +95,15 @@ export default function ProductCarousel({ title, products }: ProductCarouselProp
           1280: { slidesPerView: 5, spaceBetween: 20 },
         }}
         onBeforeInit={(swiper) => (swiperRef.current = swiper)}
-        className="overflow-visible!"
+        className=""
       >
-        {products.map((product) => (
+        {dataProduct.map((product) => (
           <SwiperSlide key={product.id} className="h-auto">
             {/* Ensure cards stretch nicely */}
             <div className="h-full">
               <ProductCard
                 product={product}
-                onAddToCart={(unit) => addToCart(product, unit)}
+                onAddToCart={() => addToCart(product)}
               />
             </div>
           </SwiperSlide>

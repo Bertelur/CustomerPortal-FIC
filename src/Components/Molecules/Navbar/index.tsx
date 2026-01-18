@@ -53,14 +53,9 @@ export default function Navbar() {
             <NavLink to="/cart" className={linkClass}>
               <TbShoppingCartFilled size={24} />
             </NavLink>
-            <button
-              onClick={() => setOpen(!open)}
-              className="md:hidden flex flex-col gap-1"
-            >
-              <span className="w-6 h-0.5 bg-gray-800"></span>
-              <span className="w-6 h-0.5 bg-gray-800"></span>
-              <span className="w-6 h-0.5 bg-gray-800"></span>
-            </button>
+            <NavLink to="/profile" className={linkClass}>
+              <TbUser size={24} />
+            </NavLink>
           </div>
         ) : (
           <div className="md:hidden flex items-center gap-4">
