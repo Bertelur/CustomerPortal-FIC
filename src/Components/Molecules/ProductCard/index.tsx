@@ -25,30 +25,25 @@ export default function ProductCard({
   };
 
   return (
-    <Card className="w-full overflow-hidden">
+    <Card>
       <CardContent className="min-h-80">
-        <div className="space-y-4">
-          {/* Image */}
-          <div className="aspect-4/3 w-full overflow-hidden rounded-lg bg-muted">
-            <img
-              src={product.imageUrl}
-              alt={product.name}
-              className="h-full w-full object-cover"
-              loading="lazy"
-            />
-          </div>
+        <div className="space-y-2">
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            className="inset-0 w-full h-32 object-cover rounded-lg"
+            loading="lazy"
+          />
 
-          {/* Title */}
-          <h2 className="line-clamp-2 text-base font-semibold leading-snug sm:h-12">
+          <h2 className="line-clamp-2 text-sm sm:text-lg font-semibold mt-4 sm:h-12">
             {product.name}
           </h2>
 
-          {/* Controls + Price */}
-          <div className="flex flex-col justify-between gap-3">
-            <div className="">
+          <div className="flex flex-col items-start justify-between gap-3">
+            <div className="min-w-0">
               <p
                 id={priceId}
-                className="text-base font-semibold text-orange-600"
+                className="mt-0.5 text-base font-semibold text-orange-600"
                 aria-live="polite"
               >
                 Rp {product.price.toLocaleString("id-ID")} /Kg
@@ -61,7 +56,7 @@ export default function ProductCard({
         </div>
       </CardContent>
 
-      <CardFooter className="">
+      <CardFooter className="px-4 pb-4 pt-2">
         <Button
           type="button"
           onClick={handleAdd}

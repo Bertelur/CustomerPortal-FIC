@@ -9,7 +9,6 @@ const Login = () => {
   return (
     <div className="h-[90vh] flex items-center justify-center px-4 py-10">
       <div className=" max-w-md">
-        {/* Logo and Header */}
         <div className="text-center mb-6">
           <div className="mx-auto inline-flex items-center justify-center w-14 h-14 rounded-xl border bg-blue-600">
             <ShoppingBag className="w-7 h-7 text-white" />
@@ -23,12 +22,8 @@ const Login = () => {
           </p>
         </div>
 
-        {/* Login Panel (no shadow) */}
-        <div className="rounded-2xl border bg-white p-6 sm:p-8">
-          <LoginForm />
-        </div>
+        <LoginForm />
 
-        {/* Register Link */}
         <p className="text-center mt-6 text-sm text-gray-600">
           Belum punya akun?{" "}
           <Button
