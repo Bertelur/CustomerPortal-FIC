@@ -8,7 +8,7 @@ export const productData: ProductProps[] = [
     stock: 500,
     units: [
       { unit: "Tray", unitValue: 1, price: 66000 },
-      { unit: "Carton", unitValue: 12, price: 792000 },
+      { unit: "Karton", unitValue: 12, price: 792000 },
     ],
   },
   {
@@ -18,7 +18,7 @@ export const productData: ProductProps[] = [
     stock: 300,
     units: [
       { unit: "Tray", unitValue: 1, price: 69950 },
-      { unit: "Carton", unitValue: 12, price: 839500 },
+      { unit: "Karton", unitValue: 12, price: 839500 },
     ],
   },
 ];
