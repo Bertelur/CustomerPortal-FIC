@@ -19,6 +19,7 @@ const fetchProducts = async (): Promise<ProductProps[]> => {
   const res = await axios.get<{ data: ProductProps[] }>(
     `${import.meta.env.VITE_API_URL}/api/v1/products`,
   );
+  console.log(res);
   return res.data.data;
 };
 
@@ -33,7 +34,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
 
   const addToCart = async (product: ProductProps) => {
     try {
-      await axios.post(
+      const response = await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
         {
           productId: product.id,
@@ -41,6 +42,8 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
         },
         { withCredentials: true },
       );
+
+      console.log("Add to cart success:", response.data);
     } catch (error) {
       console.error("Add to cart failed:", error);
     }

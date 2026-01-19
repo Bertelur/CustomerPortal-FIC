@@ -65,7 +65,9 @@ export default function ProductCard({
           type="button"
           onClick={handleAdd}
           className="w-full"
-          disabled={isAdding || product.stock === 0}
+          disabled={
+            isAdding || product.stock === 0 || product.status === "inactive"
+          }
           aria-busy={isAdding}
           aria-describedby={statusId}
           aria-label={`Tambah ${product.name} ke keranjang`}
