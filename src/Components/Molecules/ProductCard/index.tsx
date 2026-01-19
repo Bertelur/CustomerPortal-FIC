@@ -15,7 +15,6 @@ export default function ProductCard({
 
   const handleAdd = async () => {
     if (!onAddToCart || isAdding) return;
-
     setIsAdding(true);
     try {
       await Promise.resolve(onAddToCart(product));
@@ -39,7 +38,7 @@ export default function ProductCard({
             {product.name}
           </h2>
 
-          <div className="flex flex-col items-start justify-between gap-3">
+          <div className="flex flex-col items-start justify-between gap-1">
             <div className="min-w-0">
               <p
                 id={priceId}
@@ -47,6 +46,11 @@ export default function ProductCard({
                 aria-live="polite"
               >
                 Rp {product.price.toLocaleString("id-ID")} /Kg
+              </p>
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm  text-gray-400" aria-live="polite">
+                Sisa Stok: {product.stock}Kg
               </p>
             </div>
           </div>
@@ -61,7 +65,7 @@ export default function ProductCard({
           type="button"
           onClick={handleAdd}
           className="w-full"
-          disabled={isAdding}
+          disabled={isAdding || product.stock === 0}
           aria-busy={isAdding}
           aria-describedby={statusId}
           aria-label={`Tambah ${product.name} ke keranjang`}

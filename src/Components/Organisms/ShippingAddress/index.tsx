@@ -42,7 +42,7 @@ export default function ShippingAddressForm({
       } finally {
         setLoading(false);
       }
-    }, 400);
+    }, 800);
 
     return () => clearTimeout(t);
   }, [query]);

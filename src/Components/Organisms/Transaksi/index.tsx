@@ -23,7 +23,6 @@ const Transaksi = () => {
           `${import.meta.env.VITE_API_URL}/api/v1/invoices/my`,
           { withCredentials: true },
         );
-
         setDataTransaction(res.data.data);
       } catch (err) {
         console.error(err);
@@ -83,7 +82,6 @@ const Transaksi = () => {
 
         return (
           <div key={item.id} className="border rounded-2xl mb-4 bg-white">
-            {/* HEADER STATUS */}
             <div
               className={`${statusInfo.bgColor} px-4 py-3 border-b ${statusInfo.borderColor} rounded-t-2xl`}
             >
@@ -95,10 +93,7 @@ const Transaksi = () => {
                 orderId={item.paymentExternalId}
               />
             </div>
-
-            {/* BODY */}
             <div className="p-4">
-              {/* ITEMS */}
               <div className="space-y-3">
                 {item.items.map((product, index) => (
                   <div key={index} className="flex gap-4">
@@ -130,11 +125,7 @@ const Transaksi = () => {
                   </div>
                 ))}
               </div>
-
-              {/* DIVIDER */}
               <div className="border-t border-gray-200 my-4"></div>
-
-              {/* DETAIL */}
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-gray-600">Metode Pembayaran:</span>
@@ -144,7 +135,6 @@ const Transaksi = () => {
                 </div>
               </div>
 
-              {/* TOTAL */}
               <div className="border-t border-gray-200 mt-4 pt-4">
                 <div className="flex justify-between items-center">
                   <span className="text-gray-900 font-semibold">
@@ -156,7 +146,6 @@ const Transaksi = () => {
                 </div>
               </div>
 
-              {/* ACTIONS */}
               <div className="mt-4 flex gap-2">
                 {item.status === "pending" && (
                   <Button
