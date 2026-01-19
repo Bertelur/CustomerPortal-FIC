@@ -17,7 +17,7 @@ export type AddressResult = {
 export default function CartPage() {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
-  const [dataUser, setDataUser] = useState<UserProfileProps | null>(null);
+  const [_dataUser, setDataUser] = useState<UserProfileProps | null>(null);
   const [shipping, setShipping] = useState(0);
   const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
     null,
