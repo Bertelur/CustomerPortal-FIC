@@ -82,9 +82,10 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
 
       <Swiper
         spaceBetween={15}
-        slidesPerView={1.5}
+        slidesPerView={1.25}
         breakpoints={{
-          480: { slidesPerView: 1.35, spaceBetween: 12 },
+          350: { slidesPerView: 1.35, spaceBetween: 12 },
+          400: { slidesPerView: 1.5, spaceBetween: 12 },
           640: { slidesPerView: 2.2, spaceBetween: 16 },
           768: { slidesPerView: 3, spaceBetween: 16 },
           1024: { slidesPerView: 4, spaceBetween: 20 },
