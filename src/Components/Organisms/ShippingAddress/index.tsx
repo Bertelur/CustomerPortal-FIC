@@ -10,6 +10,17 @@ interface Props {
   onChange: (value: AddressResult) => void;
 }
 
+interface PhotonFeature {
+  geometry: {
+    coordinates: [number, number];
+  };
+  properties: {
+    name: string;
+    city?: string;
+    state?: string;
+  };
+}
+
 export default function ShippingAddressForm({
   address,
   distance,
@@ -17,7 +28,7 @@ export default function ShippingAddressForm({
   onChange,
 }: Props) {
   const [query, setQuery] = useState("");
-  const [results, setResults] = useState<any[]>([]);
+  const [results, setResults] = useState<PhotonFeature[]>([]);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -47,7 +58,7 @@ export default function ShippingAddressForm({
     return () => clearTimeout(t);
   }, [query]);
 
-  const handleSelect = (item: any) => {
+  const handleSelect = (item: PhotonFeature) => {
     const p = item.properties;
     const [lon, lat] = item.geometry.coordinates;
 

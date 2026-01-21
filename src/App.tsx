@@ -17,7 +17,7 @@ export default function App() {
       page_location: window.location.href,
       page_title: document.title,
       page_path: window.location.pathname,
-    })
+    });
   }, []);
 
   return (

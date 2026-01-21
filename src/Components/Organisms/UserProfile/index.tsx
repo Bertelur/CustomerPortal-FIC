@@ -1,21 +1,27 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { UserProfileProps } from "./UserProfile.types";
 import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import { ChevronDown } from "lucide-react";
 
+const getUserFromStorage = (): UserProfileProps | null => {
+  try {
+    const userStr = localStorage.getItem("user");
+    return userStr ? JSON.parse(userStr) : null;
+  } catch {
+    return null;
+  }
+};
+
 const UserProfile = () => {
   const navigate = useNavigate();
-  const [dataUser, setDataUser] = useState<UserProfileProps | null>(null);
+
+  const [dataUser] = useState<UserProfileProps | null>(() =>
+    getUserFromStorage(),
+  );
 
   const [openSection, setOpenSection] = useState<string | null>("profile");
-
-  useEffect(() => {
-    const userStr = localStorage.getItem("user");
-    const user = userStr ? JSON.parse(userStr) : null;
-    setDataUser(user);
-  }, []);
 
   const toggle = (key: string) => {
     setOpenSection((prev) => (prev === key ? null : key));
@@ -26,6 +32,7 @@ const UserProfile = () => {
       {/* ===== Informasi Pribadi ===== */}
       <div className="border rounded-xl">
         <button
+          type="button"
           onClick={() => toggle("profile")}
           className="w-full flex justify-between items-center p-4 font-semibold"
         >
@@ -42,11 +49,11 @@ const UserProfile = () => {
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <p className="text-gray-400">Nama</p>
-                <p>{dataUser?.username}</p>
+                <p>{dataUser?.username ?? "-"}</p>
               </div>
               <div>
                 <p className="text-gray-400">Email</p>
-                <p>{dataUser?.email}</p>
+                <p>{dataUser?.email ?? "-"}</p>
               </div>
             </div>
           </div>
@@ -56,6 +63,7 @@ const UserProfile = () => {
       {/* ===== Ubah Password ===== */}
       <div className="border rounded-xl">
         <button
+          type="button"
           onClick={() => toggle("password")}
           className="w-full flex justify-between items-center p-4 font-semibold"
         >
@@ -69,26 +77,24 @@ const UserProfile = () => {
 
         {openSection === "password" && (
           <div className="p-4 border-t space-y-4">
-            <div className=" grid md:grid-cols-3 gap-6">
+            <div className="grid md:grid-cols-3 gap-6">
               <InputField
-                containerClassName="w-full"
                 label="Password Lama"
                 name="passwordLama"
                 type="password"
               />
               <InputField
-                containerClassName="w-full"
                 label="Password Baru"
-                type="password"
                 name="passwordBaru"
+                type="password"
               />
               <InputField
-                containerClassName="w-full"
-                type="password"
                 label="Konfirmasi Password"
                 name="konfirmasiPassword"
+                type="password"
               />
             </div>
+
             <div className="flex gap-3 pt-2">
               <Button disabled>Simpan Perubahan</Button>
             </div>

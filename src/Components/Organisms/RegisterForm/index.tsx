@@ -77,11 +77,7 @@ const RegisterForm = () => {
       navigate("/login");
     } catch (err: unknown) {
       if (axios.isAxiosError(err)) {
-        const msg =
-          (err.response?.data as any)?.message ||
-          (err.response?.data as any)?.error ||
-          err.message ||
-          "Registrasi gagal";
+        const msg = err.message || "Registrasi gagal";
 
         toast.error(msg, { id: tId });
       } else {

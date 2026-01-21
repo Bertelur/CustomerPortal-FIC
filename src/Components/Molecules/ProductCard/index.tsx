@@ -24,16 +24,15 @@ export default function ProductCard({
   };
 
   return (
-    <Card>
-      <CardContent className="min-h-80">
+    <Card className="max-sm:w-60 max-sm:h-100">
+      <img
+        src={product.imageUrl}
+        alt={product.name}
+        className="inset-0 w-full h-60 object-cover rounded-lg"
+        loading="lazy"
+      />
+      <CardContent>
         <div className="space-y-2">
-          <img
-            src={product.imageUrl}
-            alt={product.name}
-            className="inset-0 w-full h-32 object-cover rounded-lg"
-            loading="lazy"
-          />
-
           <h2 className="line-clamp-2 text-sm sm:text-lg font-semibold mt-4 sm:h-14">
             {product.name}
           </h2>
@@ -60,7 +59,7 @@ export default function ProductCard({
         </div>
       </CardContent>
 
-      <CardFooter className="px-4 pb-4 pt-2">
+      <CardFooter className="pb-4 ">
         <Button
           type="button"
           onClick={handleAdd}

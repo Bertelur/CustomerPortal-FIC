@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useMemo, useRef } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
@@ -9,32 +9,37 @@ import { Button } from "../../Atoms/Button";
 import axios from "axios";
 import { ProductCardSkeleton } from "../../Molecules/SkeletonCard";
 import { useQuery } from "@tanstack/react-query";
+import { useSearchStore } from "../../../Store/SearchStore";
 
 interface ProductCarouselProps {
   title: string;
 }
 
-/* 🔹 fetcher di luar komponen agar stabil */
 const fetchProducts = async (): Promise<ProductProps[]> => {
   const res = await axios.get<{ data: ProductProps[] }>(
     `${import.meta.env.VITE_API_URL}/api/v1/products`,
   );
-  console.log(res);
   return res.data.data;
 };
 
 export default function ProductCarousel({ title }: ProductCarouselProps) {
   const swiperRef = useRef<SwiperType | null>(null);
+  const search = useSearchStore((value) => value.search);
 
-  /* ✅ React Query handle cache + loading + error */
   const { data, isLoading, isError } = useQuery({
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
+  const filteredProducts = useMemo(() => {
+    if (!search) return data;
+    return data?.filter((p) =>
+      p.name.toLowerCase().includes(search.toLowerCase()),
+    );
+  }, [data, search]);
 
   const addToCart = async (product: ProductProps) => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
         {
           productId: product.id,
@@ -42,15 +47,13 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
         },
         { withCredentials: true },
       );
-
-      console.log("Add to cart success:", response.data);
     } catch (error) {
       console.error("Add to cart failed:", error);
     }
   };
 
   return (
-    <section className="mx-auto my-8 w-full max-w-screen-2xl px-4 sm:px-6 lg:px-10 xl:px-14">
+    <section className="mx-auto my-8 w-full max-w-screen-2xl px-2 sm:px-6 lg:px-10 xl:px-14 max-sm:pb-20">
       {/* Header */}
       <div className="mb-4 flex items-start justify-between gap-3 sm:items-center">
         <h2 className="text-lg font-semibold leading-tight sm:text-2xl">
@@ -78,9 +81,8 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
       </div>
 
       <Swiper
-        spaceBetween={12}
-        slidesPerView={1.15}
-        watchOverflow
+        spaceBetween={15}
+        slidesPerView={1.5}
         breakpoints={{
           480: { slidesPerView: 1.35, spaceBetween: 12 },
           640: { slidesPerView: 2.2, spaceBetween: 16 },
@@ -89,6 +91,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
           1280: { slidesPerView: 5, spaceBetween: 20 },
         }}
         onBeforeInit={(swiper) => (swiperRef.current = swiper)}
+        className="mySwiper"
       >
         {isLoading &&
           Array.from({ length: 8 }).map((_, i) => (
@@ -107,7 +110,7 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
 
         {!isLoading &&
           !isError &&
-          data?.map((product) => (
+          filteredProducts?.map((product) => (
             <SwiperSlide key={product.id}>
               <ProductCard
                 product={product}
@@ -116,33 +119,6 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
             </SwiperSlide>
           ))}
       </Swiper>
-
-      {/* Mobile arrows */}
-      <div className="mt-4 flex items-center justify-between gap-2 sm:hidden">
-        <Button
-          type="button"
-          variant="outline"
-          className="h-10 flex-1"
-          onClick={() => swiperRef.current?.slidePrev()}
-        >
-          <span className="inline-flex items-center justify-center gap-2">
-            <TbArrowLeft size={20} />
-            Prev
-          </span>
-        </Button>
-
-        <Button
-          type="button"
-          variant="outline"
-          className="h-10 flex-1"
-          onClick={() => swiperRef.current?.slideNext()}
-        >
-          <span className="inline-flex items-center justify-center gap-2">
-            Next
-            <TbArrowRight size={20} />
-          </span>
-        </Button>
-      </div>
     </section>
   );
 }

@@ -9,7 +9,7 @@ const Home = () => {
           className="w-full h-full object-cover"
         />
       </div>
-      <ProductCarousel title="Produk Terlaris" />
+      <ProductCarousel title="Produk" />
     </div>
   );
 };

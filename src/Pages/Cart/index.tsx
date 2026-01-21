@@ -4,7 +4,6 @@ import EmptyCart from "../../Components/Organisms/EmptyCart";
 import type { Cart } from "../../Components/Organisms/CartList/CartList.types";
 import axios from "axios";
 import CartList from "../../Components/Organisms/CartList";
-import type { UserProfileProps } from "../../Components/Organisms/UserProfile/UserProfile.types";
 import { Truck } from "lucide-react";
 import ShippingAddressForm from "../../Components/Organisms/ShippingAddress";
 
@@ -17,7 +16,6 @@ export type AddressResult = {
 export default function CartPage() {
   const [cart, setCart] = useState<Cart | null>(null);
   const [loading, setLoading] = useState(true);
-  const [_dataUser, setDataUser] = useState<UserProfileProps | null>(null);
   const [shipping, setShipping] = useState(0);
   const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
     null,
@@ -31,7 +29,6 @@ export default function CartPage() {
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
-    setDataUser(user);
 
     if (user?.address) {
       setShippingAddress(user.address);
