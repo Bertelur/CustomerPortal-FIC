@@ -19,7 +19,6 @@ const fetchProducts = async (): Promise<ProductProps[]> => {
   const res = await axios.get<{ data: ProductProps[] }>(
     `${import.meta.env.VITE_API_URL}/api/v1/products`,
   );
-  console.log(res);
   return res.data.data;
 };
 

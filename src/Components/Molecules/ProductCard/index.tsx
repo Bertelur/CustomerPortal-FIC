@@ -26,7 +26,7 @@ export default function ProductCard({
   return (
     <Card className="max-sm:w-60 max-sm:h-100">
       <img
-        src={`https://images.unsplash.com/photo-1582722872445-44dc5f7e3c8f?q=80&w=1170&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D`}
+        src={product.imageUrl}
         alt={product.name}
         className="inset-0 w-full h-60 object-cover rounded-lg"
         loading="lazy"
