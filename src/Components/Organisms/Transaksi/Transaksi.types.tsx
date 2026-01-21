@@ -1,4 +1,5 @@
 import type { IconType } from "react-icons";
+import type { UserProfileProps } from "../UserProfile/UserProfile.types";
 
 export type TransactionStatus = "paid" | "pending" | "expired" | "failed";
 
@@ -36,7 +37,7 @@ export interface DataTransaction {
 
   invoiceUrl: string;
 
-  customer: any | null;
+  customer: UserProfileProps | null;
   items: InvoiceItem[];
 
   createdAt: string;
