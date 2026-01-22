@@ -8,6 +8,8 @@ interface Props {
   distance: number;
   err: string;
   onChange: (value: AddressResult) => void;
+  additionalNotes?: string;
+  onAdditionalNotesChange?: (notes: string) => void;
 }
 
 interface PhotonFeature {
@@ -26,6 +28,8 @@ export default function ShippingAddressForm({
   distance,
   err,
   onChange,
+  additionalNotes = "",
+  onAdditionalNotesChange,
 }: Props) {
   const [query, setQuery] = useState("");
   const [results, setResults] = useState<PhotonFeature[]>([]);
@@ -76,7 +80,7 @@ export default function ShippingAddressForm({
 
     setQuery(label);
     setResults([]);
-    onChange({ label, lat, lon });
+    onChange({ label, lat, lon, additionalNotes });
   };
 
   return (
@@ -120,6 +124,25 @@ export default function ShippingAddressForm({
           📍 Jarak ke toko: <b>{distance} km</b>
         </p>
       )}
+
+      <div className="mt-4">
+        <label className="block text-sm font-medium text-gray-700 mb-2">
+          Catatan Tambahan untuk Lokasi Pengiriman (Opsional)
+        </label>
+        <textarea
+          value={additionalNotes}
+          onChange={(e) => {
+            const notes = e.target.value;
+            onAdditionalNotesChange?.(notes);
+            if (address) {
+              onChange({ ...address, additionalNotes: notes });
+            }
+          }}
+          placeholder="Contoh: Rumah warna biru, dekat masjid, atau instruksi khusus lainnya"
+          className="w-full border rounded-xl p-4 min-h-[100px] resize-y"
+          rows={3}
+        />
+      </div>
 
       {err && <p className="text-red-500 mt-2">{err}</p>}
     </div>

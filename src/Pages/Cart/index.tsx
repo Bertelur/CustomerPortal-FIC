@@ -12,6 +12,7 @@ export type AddressResult = {
   label: string;
   lat: number;
   lon: number;
+  additionalNotes?: string;
 };
 
 export default function CartPage() {
@@ -21,6 +22,7 @@ export default function CartPage() {
   const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
     null,
   );
+  const [additionalNotes, setAdditionalNotes] = useState<string>("");
   const [error, setError] = useState("");
   const [distance, setDistance] = useState(0);
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
@@ -35,6 +37,7 @@ export default function CartPage() {
 
     if (user?.address) {
       setShippingAddress(user.address);
+      setAdditionalNotes(user.address.additionalNotes || "");
       setDeliveryMethod("delivery"); // opsional: langsung set ke delivery
     }
 
@@ -61,6 +64,7 @@ export default function CartPage() {
       setShipping(0);
       setDistance(0);
       setShippingAddress(null);
+      setAdditionalNotes("");
       setError("");
     }
   }, [deliveryMethod]);
@@ -176,10 +180,19 @@ export default function CartPage() {
 
     const updatedUser = {
       ...user,
-      address: value, // simpan full object (label, lat, lon)
+      address: value, // simpan full object (label, lat, lon, additionalNotes)
     };
 
     localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  const handleAdditionalNotesChange = (notes: string) => {
+    setAdditionalNotes(notes);
+    if (shippingAddress) {
+      const updatedAddress = { ...shippingAddress, additionalNotes: notes };
+      setShippingAddress(updatedAddress);
+      handleAddressChange(updatedAddress);
+    }
   };
 
   if (loading) return <p className="p-8">Loading...</p>;
@@ -223,6 +236,8 @@ export default function CartPage() {
                 address={shippingAddress}
                 onChange={handleAddressChange}
                 distance={distance}
+                additionalNotes={additionalNotes}
+                onAdditionalNotesChange={handleAdditionalNotesChange}
               />
             )}
           </div>
@@ -238,6 +253,9 @@ export default function CartPage() {
           subtotal={cart.totalAmount}
           shipping={shipping}
           cart={cart.items}
+          shippingAddress={deliveryMethod === "delivery" ? shippingAddress : null}
+          additionalNotes={deliveryMethod === "delivery" ? additionalNotes : undefined}
+          deliveryMethod={deliveryMethod}
         />
       </div>
     </div>

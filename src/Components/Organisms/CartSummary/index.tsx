@@ -7,6 +7,9 @@ export default function CartSummary({
   subtotal,
   shipping,
   cart,
+  shippingAddress,
+  additionalNotes,
+  deliveryMethod = "pickup",
 }: CartSummaryProps) {
   const [loading, setLoading] = useState(false);
 
@@ -19,11 +22,35 @@ export default function CartSummary({
     setLoading(true);
 
     try {
+      // Prepare shipping address for backend
+      // Backend expects Address format: { street, city, province, postalCode, phone, additionalNotes?, label?, lat?, lon? }
+      let shippingAddressPayload: any = undefined;
+      if (deliveryMethod === "delivery" && shippingAddress) {
+        // Parse the label to extract address components if possible
+        // For now, we'll send the geocoded data and let backend handle it
+        // The label contains the full address string
+        const labelParts = shippingAddress.label.split(",").map((s) => s.trim());
+        shippingAddressPayload = {
+          label: shippingAddress.label,
+          lat: shippingAddress.lat,
+          lon: shippingAddress.lon,
+          street: labelParts[0] || shippingAddress.label, // Use first part as street
+          city: labelParts[1] || "", // Try to extract city
+          province: labelParts[2] || "", // Try to extract province
+          postalCode: "", // Not available from geocoding
+          phone: "", // Not available from form
+          additionalNotes: additionalNotes || shippingAddress.additionalNotes || "",
+        };
+      }
+
       const payload = {
         successRedirectUrl: `${window.location.origin}/success`,
         failureRedirectUrl: `${window.location.origin}/failure`,
         productIds: cart.map((item) => item.productId),
         forceNew: true,
+        shippingAddress: shippingAddressPayload,
+        additionalNotes: deliveryMethod === "delivery" ? (additionalNotes || shippingAddress?.additionalNotes) : undefined,
+        deliveryMethod,
       };
 
       const res = await axios.post(
