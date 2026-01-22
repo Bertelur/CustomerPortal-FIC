@@ -42,8 +42,9 @@ export const useCartStore = create<CartState>((set) => ({
       cartCount: count,
     }),
   refreshCart: async () => {
-    const user = typeof window !== "undefined" ? localStorage.getItem("user") : null;
-    if (!user) {
+    // Dynamic import to avoid circular dependency
+    const authModule = await import("../Lib/auth");
+    if (!authModule.isLoggedIn()) {
       set({ cart: null, cartCount: 0, isLoading: false, error: null });
       return;
     }

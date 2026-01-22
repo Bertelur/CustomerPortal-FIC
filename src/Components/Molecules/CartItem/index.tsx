@@ -15,7 +15,7 @@ export default function CartItem({
   return (
     <div
       key={productId}
-      className="flex flex-col md:flex-row md:justify-between p-4 border border-gray-200 rounded-xl transition-colors"
+      className="flex flex-col md:flex-row md:justify-between transition-colors"
     >
       <div className="flex items-center gap-4">
         <img

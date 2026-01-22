@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
@@ -7,44 +7,29 @@ import ProductCard from "../../Molecules/ProductCard";
 import type { ProductProps } from "../../Molecules/ProductCard/ProductProps.types";
 import { Button } from "../../Atoms/Button";
 import axios from "axios";
-import { ProductCardSkeleton } from "../../Molecules/SkeletonCard";
-import { useQuery } from "@tanstack/react-query";
 import { useSearchStore } from "../../../Store/SearchStore";
 import { useCartStore } from "../../../Store/CartStore";
+import { useProductStore } from "../../../Store/ProductStore";
+import { useProductSearch } from "../../../Lib/hooks/useProductSearch";
+import { isLoggedIn } from "../../../Lib/auth";
 import AuthDialog from "../AuthDialog";
 
 interface ProductCarouselProps {
   title: string;
 }
 
-const fetchProducts = async (): Promise<ProductProps[]> => {
-  const res = await axios.get<{ data: ProductProps[] }>(
-    `${import.meta.env.VITE_API_URL}/api/v1/products`,
-  );
-  return res.data.data;
-};
-
 export default function ProductCarousel({ title }: ProductCarouselProps) {
   const swiperRef = useRef<SwiperType | null>(null);
   const search = useSearchStore((value) => value.search);
   const refreshCart = useCartStore((state) => state.refreshCart);
+  const products = useProductStore((state) => state.products);
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
 
-  const { data, isLoading, isError } = useQuery({
-    queryKey: ["products"],
-    queryFn: fetchProducts,
-  });
-  const filteredProducts = useMemo(() => {
-    if (!search) return data;
-    return data?.filter((p) =>
-      p.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [data, search]);
+  // Use optimized search hook
+  const filteredProducts = useProductSearch(products, search);
 
   const addToCart = async (product: ProductProps) => {
-    const isLoggedIn = Boolean(localStorage.getItem("user"));
-
-    if (!isLoggedIn) {
+    if (!isLoggedIn()) {
       setAuthDialogOpen(true);
       return;
     }
@@ -108,31 +93,22 @@ export default function ProductCarousel({ title }: ProductCarouselProps) {
           onBeforeInit={(swiper) => (swiperRef.current = swiper)}
           className="mySwiper"
         >
-          {isLoading &&
-            Array.from({ length: 8 }).map((_, i) => (
-              <SwiperSlide key={i}>
-                <ProductCardSkeleton />
-              </SwiperSlide>
-            ))}
-
-          {isError && (
+          {filteredProducts.length === 0 ? (
             <SwiperSlide>
-              <div className="flex h-40 items-center justify-center text-sm text-red-500">
-                Gagal memuat produk.
+              <div className="flex h-40 items-center justify-center text-sm text-gray-500">
+                Tidak ada produk ditemukan.
               </div>
             </SwiperSlide>
-          )}
-
-          {!isLoading &&
-            !isError &&
-            filteredProducts?.map((product) => (
+          ) : (
+            filteredProducts.map((product) => (
               <SwiperSlide key={product.id}>
                 <ProductCard
                   product={product}
                   onAddToCart={() => addToCart(product)}
                 />
               </SwiperSlide>
-            ))}
+            ))
+          )}
         </Swiper>
       </section>
     </>

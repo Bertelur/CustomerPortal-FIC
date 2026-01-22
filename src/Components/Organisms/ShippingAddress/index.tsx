@@ -41,21 +41,31 @@ export default function ShippingAddressForm({
       return;
     }
 
+    const controller = new AbortController();
+
     const t = setTimeout(async () => {
       try {
         setLoading(true);
         const res = await axios.get("https://photon.komoot.io/api/", {
           params: { q: query, limit: 6 },
+          signal: controller.signal,
         });
         setResults(res.data.features);
-      } catch (e) {
-        console.error(e);
+      } catch (e: any) {
+        if (e.name !== "CanceledError") {
+          console.error(e);
+        }
       } finally {
-        setLoading(false);
+        if (!controller.signal.aborted) {
+          setLoading(false);
+        }
       }
     }, 800);
 
-    return () => clearTimeout(t);
+    return () => {
+      clearTimeout(t);
+      controller.abort();
+    };
   }, [query]);
 
   const handleSelect = (item: PhotonFeature) => {
@@ -70,7 +80,7 @@ export default function ShippingAddressForm({
   };
 
   return (
-    <div className="bg-white rounded-2xl shadow-xl p-6 relative">
+    <div className="rounded-2xl p-6 relative border border-gray-200">
       <div className="flex items-center gap-2 mb-4">
         <MapPin className="w-5 h-5 text-orange-600" />
         <h2 className="text-xl font-bold">Alamat Pengiriman</h2>
@@ -86,7 +96,7 @@ export default function ShippingAddressForm({
       {loading && <p className="text-sm mt-2">Mencari lokasi...</p>}
 
       {results.length > 0 && (
-        <div className="absolute z-30 mt-2 w-[calc(100%-3rem)] bg-white border rounded-xl shadow-lg max-h-72 overflow-auto">
+        <div className="absolute z-30 mt-2 w-[calc(100%-3rem)] bg-white border rounded-xl max-h-72 overflow-auto">
           {results.map((item, i) => (
             <div
               key={i}

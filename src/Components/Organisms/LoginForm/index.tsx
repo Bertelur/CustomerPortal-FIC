@@ -4,6 +4,7 @@ import { Button } from "../../Atoms/Button";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { Eye, EyeClosed, Lock, Mail, Loader2 } from "lucide-react";
+import { setUser } from "../../../Lib/auth";
 
 const LoginForm = () => {
   const [form, setForm] = useState({ email: "", password: "" });
@@ -30,8 +31,7 @@ const LoginForm = () => {
         },
         { withCredentials: true }
       );
-      localStorage.setItem("user", JSON.stringify(response.data.data.user));
-      window.dispatchEvent(new Event("auth-change"));
+      await setUser(response.data.data.user);
       navigate("/");
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {

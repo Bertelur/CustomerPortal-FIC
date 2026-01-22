@@ -55,7 +55,7 @@ export default function CartSummary({
   };
 
   return (
-    <div className="bg-white rounded-xl p-6 shadow-sm h-fit lg:sticky top-20 mt-4 z-10 ">
+    <div className="bg-white rounded-xl p-6 border border-gray-200 h-fit lg:sticky top-20 z-10 ">
       <h2 className="text-xl font-semibold mb-4">Shopping Summary</h2>
 
       <div className="space-y-3 text-sm">

@@ -5,6 +5,7 @@ import { Button } from "../../Atoms/Button";
 import { Input } from "../../Atoms/Input";
 import { useSearchStore } from "../../../Store/SearchStore";
 import { useCartStore } from "../../../Store/CartStore";
+import { getUser } from "../../../Lib/auth";
 
 export default function Navbar() {
   const [isLogin, setIsLogin] = useState<string | null>(null);
@@ -14,21 +15,22 @@ export default function Navbar() {
   const refreshCart = useCartStore((state) => state.refreshCart);
 
   useEffect(() => {
-    const checkAuth = () => {
-      setIsLogin(localStorage.getItem("user"));
-      if (localStorage.getItem("user")) {
+    const checkAuth = async () => {
+      const user = await getUser();
+      setIsLogin(user ? "authenticated" : null);
+      if (user) {
         void refreshCart();
       }
     };
 
-    checkAuth();
+    void checkAuth();
     window.addEventListener("auth-change", checkAuth);
     window.addEventListener("storage", checkAuth);
     return () => {
       window.removeEventListener("auth-change", checkAuth);
       window.removeEventListener("storage", checkAuth);
     };
-  }, []);
+  }, [refreshCart]);
   const linkClass = ({ isActive }: { isActive: boolean }) =>
     isActive
       ? "max-md:bg-orange-600 text-white md:text-orange-500 md:font-semibold "
