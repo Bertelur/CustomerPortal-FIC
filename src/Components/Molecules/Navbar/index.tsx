@@ -48,6 +48,22 @@ export default function Navbar() {
         <nav className="hidden md:flex gap-4 md:items-center">
           {isLogin ? (
             <div className="md:flex gap-4 md:items-center">
+              <div className="flex border rounded-md items-center">
+                <Button
+                  variant={`default`}
+                  className="bg-white text-gray-400 hover:bg-white"
+                >
+                  <TbSearch size={18} />
+                </Button>
+                <Input
+                  className="border-none text-sm w-64"
+                  placeholder="Cari Produk Disini"
+                  value={search}
+                  onChange={(e) => {
+                    setSearch(e.target.value);
+                  }}
+                />
+              </div>
               <NavLink to="/cart" className={linkClass}>
                 <div className="relative inline-flex">
                   <TbShoppingCartFilled size={24} />
