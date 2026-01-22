@@ -6,6 +6,7 @@ import axios from "axios";
 import CartList from "../../Components/Organisms/CartList";
 import { Truck } from "lucide-react";
 import ShippingAddressForm from "../../Components/Organisms/ShippingAddress";
+import { useCartStore } from "../../Store/CartStore";
 
 export type AddressResult = {
   label: string;
@@ -25,6 +26,8 @@ export default function CartPage() {
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
+  const setCartInStore = useCartStore((state) => state.setCart);
+  const setCartItemsInStore = useCartStore((state) => state.setCartItems);
   // ================= FETCH DATA =================
   useEffect(() => {
     const userStr = localStorage.getItem("user");
@@ -42,6 +45,7 @@ export default function CartPage() {
           { withCredentials: true },
         );
         setCart(res.data.data);
+        setCartInStore(res.data.data);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
       } finally {
@@ -117,12 +121,14 @@ export default function CartPage() {
           (item) => item.productId !== productId,
         );
 
-        return {
+        const updatedCart: Cart = {
           ...prev,
           items: newItems,
           totalQuantity: newItems.reduce((a, b) => a + b.quantity, 0),
           totalAmount: newItems.reduce((a, b) => a + b.price * b.quantity, 0),
         };
+        setCartItemsInStore(updatedCart.items);
+        return updatedCart;
       });
     } catch (error) {
       console.error("Failed to remove item:", error);
@@ -144,7 +150,7 @@ export default function CartPage() {
           item.productId === productId ? { ...item, quantity } : item,
         );
 
-        return {
+        const updatedCart: Cart = {
           ...prev,
           items: updatedItems,
           totalQuantity: updatedItems.reduce((a, b) => a + b.quantity, 0),
@@ -153,6 +159,8 @@ export default function CartPage() {
             0,
           ),
         };
+        setCartItemsInStore(updatedCart.items);
+        return updatedCart;
       });
     } catch (error) {
       console.error("Failed to update quantity", error);
