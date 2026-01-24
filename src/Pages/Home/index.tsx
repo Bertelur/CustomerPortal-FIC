@@ -44,15 +44,13 @@ const Home = () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
-        {
-          productId: product.id,
-          quantity: 1,
-        },
+        { productId: product.id, quantity: 1 },
         { withCredentials: true },
       );
-      void refreshCart();
-    } catch (error) {
-      console.error("Add to cart failed:", error);
+      await refreshCart();
+    } catch (error: any) {
+      console.log("FAILED STATUS:", error?.response?.status);
+      console.log("FAILED DATA:", error?.response?.data);
     }
   };
 
@@ -91,7 +89,10 @@ const Home = () => {
         {/* Products */}
         {!isLoading && !isError && (
           <>
-            <AuthDialog open={authDialogOpen} onOpenChange={setAuthDialogOpen} />
+            <AuthDialog
+              open={authDialogOpen}
+              onOpenChange={setAuthDialogOpen}
+            />
             <CategorizedProducts
               selectedCategory={selectedCategory}
               onAddToCart={addToCart}

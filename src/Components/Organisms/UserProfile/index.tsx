@@ -1,31 +1,43 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import type { UserProfileProps } from "./UserProfile.types";
 import InputField from "../../Molecules/InputField";
 import { Button } from "../../Atoms/Button";
 import { ChevronDown } from "lucide-react";
 
-const getUserFromStorage = (): UserProfileProps | null => {
-  try {
-    const userStr = localStorage.getItem("user");
-    return userStr ? JSON.parse(userStr) : null;
-  } catch {
-    return null;
-  }
-};
+import { getUser, clearUser } from "../../../Lib/auth";
+// sesuaikan path
 
 const UserProfile = () => {
   const navigate = useNavigate();
 
-  const [dataUser] = useState<UserProfileProps | null>(() =>
-    getUserFromStorage(),
-  );
-
+  const [dataUser, setDataUser] = useState<UserProfileProps | null>(null);
+  const [loading, setLoading] = useState(true);
   const [openSection, setOpenSection] = useState<string | null>("profile");
+
+  useEffect(() => {
+    let mounted = true;
+
+    (async () => {
+      const user = await getUser();
+      if (mounted) {
+        setDataUser(user as UserProfileProps | null);
+        setLoading(false);
+      }
+    })();
+
+    return () => {
+      mounted = false;
+    };
+  }, []);
 
   const toggle = (key: string) => {
     setOpenSection((prev) => (prev === key ? null : key));
   };
+
+  if (loading) {
+    return <div className="p-6">Loading...</div>;
+  }
 
   return (
     <div className="space-y-4 border rounded-2xl p-6">
@@ -105,8 +117,7 @@ const UserProfile = () => {
       <Button
         className="bg-red-500 hover:bg-white hover:text-red-500 border border-red-500"
         onClick={() => {
-          localStorage.removeItem("user");
-          window.dispatchEvent(new Event("auth-change"));
+          clearUser(); // hapus user terenkripsi + dispatch event
           navigate("/");
         }}
       >

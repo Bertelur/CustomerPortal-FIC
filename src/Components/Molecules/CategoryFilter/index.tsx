@@ -33,7 +33,7 @@ export default function CategoryFilter({
         onCategoryChange(value === "all" ? null : value)
       }
     >
-      <SelectTrigger className="w-full sm:w-[200px]">
+      <SelectTrigger className="w-full sm:w-50">
         <SelectValue placeholder="Pilih Kategori" />
       </SelectTrigger>
       <SelectContent>

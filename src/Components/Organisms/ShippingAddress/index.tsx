@@ -139,7 +139,7 @@ export default function ShippingAddressForm({
             }
           }}
           placeholder="Contoh: Rumah warna biru, dekat masjid, atau instruksi khusus lainnya"
-          className="w-full border rounded-xl p-4 min-h-[100px] resize-y"
+          className="w-full border rounded-xl p-4 min-h-25 resize-y"
           rows={3}
         />
       </div>
