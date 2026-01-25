@@ -65,7 +65,7 @@ export default function Navbar() {
                 />
               </div>
               <NavLink to="/cart" className={linkClass}>
-                <div className="relative inline-flex">
+                <div className="relative">
                   <TbShoppingCartFilled size={24} />
                   {cartCount > 0 && (
                     <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-orange-500 px-1 text-[10px] font-semibold text-white">

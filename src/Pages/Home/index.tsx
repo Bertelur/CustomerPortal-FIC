@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import CategorizedProducts from "../../Components/Organisms/CategorizedProducts";
@@ -10,6 +10,7 @@ import { useCartStore } from "../../Store/CartStore";
 import { isLoggedIn } from "../../Lib/auth";
 import AuthDialog from "../../Components/Organisms/AuthDialog";
 import { ProductCardSkeleton } from "../../Components/Molecules/SkeletonCard";
+import { TabsFilter } from "../../Components/Molecules/TabsFilter";
 
 const fetchProducts = async (): Promise<ProductProps[]> => {
   const res = await axios.get<{ data: ProductProps[] }>(
@@ -19,7 +20,7 @@ const fetchProducts = async (): Promise<ProductProps[]> => {
 };
 
 const Home = () => {
-  const [selectedCategory, setSelectedCategory] = useState<string | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<string>("all");
   const [authDialogOpen, setAuthDialogOpen] = useState(false);
   const setProducts = useProductStore((state) => state.setProducts);
   const refreshCart = useCartStore((state) => state.refreshCart);
@@ -28,6 +29,12 @@ const Home = () => {
     queryKey: ["products"],
     queryFn: fetchProducts,
   });
+
+  const categories = useMemo(() => {
+    if (!data) return [];
+    const cats = data.map((p) => p.category);
+    return ["all", ...Array.from(new Set(cats))];
+  }, [data]);
 
   useEffect(() => {
     if (data) {
@@ -63,9 +70,10 @@ const Home = () => {
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <h1 className="text-2xl font-bold text-gray-900">Produk</h1>
           <div className="flex items-center gap-4">
-            <CategoryFilter
-              selectedCategory={selectedCategory}
-              onCategoryChange={setSelectedCategory}
+            <TabsFilter
+              categories={categories}
+              value={selectedCategory}
+              onChange={setSelectedCategory}
             />
           </div>
         </div>
