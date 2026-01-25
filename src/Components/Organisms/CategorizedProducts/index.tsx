@@ -29,18 +29,20 @@ export default function CategorizedProducts({
   const productsByCategory = useMemo(() => {
     const grouped: Record<string, ProductProps[]> = {};
 
-    // If a category is selected, only show that category
-    if (selectedCategory) {
+    // Kalau bukan "all", baru filter satu kategori
+    if (selectedCategory && selectedCategory !== "all") {
       const categoryProducts = filteredProducts.filter(
         (p) => p.category === selectedCategory,
       );
+
       if (categoryProducts.length > 0) {
         grouped[selectedCategory] = categoryProducts;
       }
+
       return grouped;
     }
 
-    // Otherwise, group all filtered products by category
+    // Kalau "all", tampilkan semua kategori
     filteredProducts.forEach((product) => {
       if (!grouped[product.category]) {
         grouped[product.category] = [];
