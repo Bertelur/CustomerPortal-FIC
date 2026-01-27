@@ -28,9 +28,11 @@ export default function CartPage() {
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
+  const [eggQty, setEggQty] = useState(0);
   const setCartInStore = useCartStore((state) => state.setCart);
   const setCartItemsInStore = useCartStore((state) => state.setCartItems);
-  // ================= FETCH DATA =================
+
+  // ================= FETCH CART =================
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
@@ -38,7 +40,7 @@ export default function CartPage() {
     if (user?.address) {
       setShippingAddress(user.address);
       setAdditionalNotes(user.address.additionalNotes || "");
-      setDeliveryMethod("delivery"); // opsional: langsung set ke delivery
+      setDeliveryMethod("delivery");
     }
 
     const fetchCart = async () => {
@@ -59,6 +61,7 @@ export default function CartPage() {
     fetchCart();
   }, []);
 
+  // ================= PICKUP RESET =================
   useEffect(() => {
     if (deliveryMethod === "pickup") {
       setShipping(0);
@@ -69,24 +72,61 @@ export default function CartPage() {
     }
   }, [deliveryMethod]);
 
-  // ================= HITUNG ONGKIR SAAT PILIH ALAMAT =================
+  // ================= ONGKIR TRIGGER =================
   useEffect(() => {
-    if (!shippingAddress || deliveryMethod !== "delivery") return;
+    if (!shippingAddress || deliveryMethod !== "delivery" || !cart) return;
+
+    // 👉 hitung khusus Telur Ayam Biasa
+    const telurQty = cart.items
+      .filter((item) => item.name === "Telur Ayam Kampung")
+      .reduce((sum, item) => sum + item.quantity, 0);
 
     const t = setTimeout(() => {
-      calculateShippingFromCoord(shippingAddress.lat, shippingAddress.lon);
+      calculateShippingFromCoord(
+        shippingAddress.lat,
+        shippingAddress.lon,
+        telurQty,
+      );
     }, 500);
 
     return () => clearTimeout(t);
-  }, [shippingAddress, deliveryMethod]);
+  }, [shippingAddress, deliveryMethod, cart]);
+
+  useEffect(() => {
+    if (!cart) return;
+
+    const totalTelur = cart.items
+      .filter((item) => item.name === "Telur Ayam Kampung")
+      .reduce((sum, item) => sum + item.quantity, 0);
+
+    setEggQty(totalTelur);
+
+    if (
+      totalTelur >= 45 &&
+      totalTelur <= 1500 &&
+      deliveryMethod === "delivery"
+    ) {
+      setDeliveryMethod("pickup");
+    }
+  }, [cart, deliveryMethod]);
 
   // ================= HITUNG ONGKIR =================
-  const calculateShippingFromCoord = async (lat: number, lon: number) => {
+  const calculateShippingFromCoord = async (
+    lat: number,
+    lon: number,
+    telurQty: number,
+  ) => {
     try {
+      // 👉 FREE SHIPPING RULE
+      if (telurQty >= 100) {
+        setShipping(0);
+        setDistance(0);
+        setError("");
+        return;
+      }
+
       const store = { lat: -6.901499, lon: 107.647224 };
-
       const url = `https://router.project-osrm.org/route/v1/driving/${store.lon},${store.lat};${lon},${lat}?overview=false`;
-
       const res = await axios.get(url);
 
       if (!res.data.routes?.length) throw new Error("Route tidak ditemukan");
@@ -170,6 +210,7 @@ export default function CartPage() {
       console.error("Failed to update quantity", error);
     }
   };
+
   const handleAddressChange = (value: AddressResult) => {
     setShippingAddress(value);
 
@@ -177,12 +218,7 @@ export default function CartPage() {
     if (!userStr) return;
 
     const user = JSON.parse(userStr);
-
-    const updatedUser = {
-      ...user,
-      address: value, // simpan full object (label, lat, lon, additionalNotes)
-    };
-
+    const updatedUser = { ...user, address: value };
     localStorage.setItem("user", JSON.stringify(updatedUser));
   };
 
@@ -253,8 +289,12 @@ export default function CartPage() {
           subtotal={cart.totalAmount}
           shipping={shipping}
           cart={cart.items}
-          shippingAddress={deliveryMethod === "delivery" ? shippingAddress : null}
-          additionalNotes={deliveryMethod === "delivery" ? additionalNotes : undefined}
+          shippingAddress={
+            deliveryMethod === "delivery" ? shippingAddress : null
+          }
+          additionalNotes={
+            deliveryMethod === "delivery" ? additionalNotes : undefined
+          }
           deliveryMethod={deliveryMethod}
         />
       </div>

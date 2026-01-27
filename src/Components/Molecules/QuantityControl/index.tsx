@@ -8,7 +8,7 @@ export default function QuantityControl({
     <div className="flex items-center gap-2">
       <input
         type="number"
-        min={1}
+        min={45}
         max={stock}
         value={value}
         onChange={(e) => {
