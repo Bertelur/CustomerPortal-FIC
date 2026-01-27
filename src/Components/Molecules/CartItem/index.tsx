@@ -2,6 +2,7 @@ import { TbTrash } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 import QuantityControl from "../QuantityControl";
 import type { CartItemProps } from "./CartItem.types";
+import { useProductStore } from "../../../Store/ProductStore";
 
 export default function CartItem({
   productId,
@@ -12,6 +13,10 @@ export default function CartItem({
   onRemove,
   onQuantityChange,
 }: CartItemProps) {
+  const product = useProductStore((state) =>
+    state.products.find((p) => p.id === productId),
+  );
+
   return (
     <div
       key={productId}
@@ -35,7 +40,7 @@ export default function CartItem({
 
       <div className="flex items-center gap-4">
         <QuantityControl
-          stock={100}
+          stock={product?.stock}
           value={quantity}
           onChange={(val) => onQuantityChange(productId, val)}
         />

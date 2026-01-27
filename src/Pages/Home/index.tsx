@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from "react";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import CategorizedProducts from "../../Components/Organisms/CategorizedProducts";
-import CategoryFilter from "../../Components/Molecules/CategoryFilter";
+// import CategoryFilter from "../../Components/Molecules/CategoryFilter";
 import AdCarousel from "../../Components/Organisms/AdCarousel";
 import type { ProductProps } from "../../Components/Molecules/ProductCard/ProductProps.types";
 import { useProductStore } from "../../Store/ProductStore";
@@ -51,7 +51,7 @@ const Home = () => {
     try {
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
-        { productId: product.id, quantity: 1 },
+        { productId: product.id, quantity: 45 },
         { withCredentials: true },
       );
       await refreshCart();
@@ -68,7 +68,6 @@ const Home = () => {
       <div className="mx-auto my-8 w-full max-w-screen-2xl px-2 sm:px-6 lg:px-10 xl:px-14">
         {/* Filters Section */}
         <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <h1 className="text-2xl font-bold text-gray-900">Produk</h1>
           <div className="flex items-center gap-4">
             <TabsFilter
               categories={categories}
