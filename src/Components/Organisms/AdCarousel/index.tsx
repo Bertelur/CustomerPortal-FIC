@@ -65,7 +65,9 @@ export default function AdCarousel() {
             bulletClass: "ad-carousel-bullet",
             bulletActiveClass: "ad-carousel-bullet-active",
           }}
-          onBeforeInit={(swiper) => (swiperRef.current = swiper)}
+          onBeforeInit={(swiper) => {
+            swiperRef.current = swiper;
+          }}
           className="h-full w-full"
         >
           {ads.map((ad) => (

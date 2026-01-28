@@ -37,7 +37,7 @@ export default function ShippingAddressForm({
 
   useEffect(() => {
     if (address?.label) setQuery(address.label);
-  }, [address]);
+  }, [address?.label]);
 
   useEffect(() => {
     if (query.length < 3) {
@@ -55,9 +55,9 @@ export default function ShippingAddressForm({
           signal: controller.signal,
         });
         setResults(res.data.features);
-      } catch (e: any) {
-        if (e.name !== "CanceledError") {
-          console.error(e);
+      } catch (error: unknown) {
+        if (!axios.isCancel(error)) {
+          console.error("Photon API error:", error);
         }
       } finally {
         if (!controller.signal.aborted) {

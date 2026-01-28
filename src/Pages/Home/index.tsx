@@ -55,9 +55,11 @@ const Home = () => {
         { withCredentials: true },
       );
       await refreshCart();
-    } catch (error: any) {
-      console.log("FAILED STATUS:", error?.response?.status);
-      console.log("FAILED DATA:", error?.response?.data);
+    } catch (error: unknown) {
+      if (axios.isAxiosError(error)) {
+        console.log("FAILED STATUS:", error.response?.status);
+        console.log("FAILED DATA:", error.response?.data);
+      }
     }
   };
 
