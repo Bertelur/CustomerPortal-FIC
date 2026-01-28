@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CartSummary from "../../Components/Organisms/CartSummary";
 import EmptyCart from "../../Components/Organisms/EmptyCart";
 import type { Cart } from "../../Components/Organisms/CartList/CartList.types";
@@ -22,15 +22,23 @@ export default function CartPage() {
   const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
     null,
   );
-  const [additionalNotes, setAdditionalNotes] = useState<string>("");
+  const [additionalNotes, setAdditionalNotes] = useState("");
   const [error, setError] = useState("");
   const [distance, setDistance] = useState(0);
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
-  const [eggQty, setEggQty] = useState(0);
+
   const setCartInStore = useCartStore((state) => state.setCart);
   const setCartItemsInStore = useCartStore((state) => state.setCartItems);
+
+  // ================= DERIVED STATE =================
+  const totalTelur = useMemo(() => {
+    if (!cart) return 0;
+    return cart.items
+      .filter((item) => item.name === "Telur Ayam Kampung")
+      .reduce((sum, item) => sum + item.quantity, 0);
+  }, [cart]);
 
   // ================= FETCH CART =================
   useEffect(() => {
@@ -59,7 +67,7 @@ export default function CartPage() {
     };
 
     fetchCart();
-  }, []);
+  }, [setCartInStore]);
 
   // ================= PICKUP RESET =================
   useEffect(() => {
@@ -74,33 +82,21 @@ export default function CartPage() {
 
   // ================= ONGKIR TRIGGER =================
   useEffect(() => {
-    if (!shippingAddress || deliveryMethod !== "delivery" || !cart) return;
-
-    // 👉 hitung khusus Telur Ayam Biasa
-    const telurQty = cart.items
-      .filter((item) => item.name === "Telur Ayam Kampung")
-      .reduce((sum, item) => sum + item.quantity, 0);
+    if (!shippingAddress || deliveryMethod !== "delivery") return;
 
     const t = setTimeout(() => {
       calculateShippingFromCoord(
         shippingAddress.lat,
         shippingAddress.lon,
-        telurQty,
+        totalTelur,
       );
     }, 500);
 
     return () => clearTimeout(t);
-  }, [shippingAddress, deliveryMethod, cart]);
+  }, [shippingAddress, deliveryMethod, totalTelur]);
 
+  // ================= PICKUP RULE =================
   useEffect(() => {
-    if (!cart) return;
-
-    const totalTelur = cart.items
-      .filter((item) => item.name === "Telur Ayam Kampung")
-      .reduce((sum, item) => sum + item.quantity, 0);
-
-    setEggQty(totalTelur);
-
     if (
       totalTelur >= 45 &&
       totalTelur <= 1500 &&
@@ -108,7 +104,7 @@ export default function CartPage() {
     ) {
       setDeliveryMethod("pickup");
     }
-  }, [cart, deliveryMethod]);
+  }, [totalTelur, deliveryMethod]);
 
   // ================= HITUNG ONGKIR =================
   const calculateShippingFromCoord = async (
@@ -161,6 +157,7 @@ export default function CartPage() {
 
       setCart((prev) => {
         if (!prev) return prev;
+
         const newItems = prev.items.filter(
           (item) => item.productId !== productId,
         );
@@ -171,6 +168,7 @@ export default function CartPage() {
           totalQuantity: newItems.reduce((a, b) => a + b.quantity, 0),
           totalAmount: newItems.reduce((a, b) => a + b.price * b.quantity, 0),
         };
+
         setCartItemsInStore(updatedCart.items);
         return updatedCart;
       });
@@ -203,6 +201,7 @@ export default function CartPage() {
             0,
           ),
         };
+
         setCartItemsInStore(updatedCart.items);
         return updatedCart;
       });

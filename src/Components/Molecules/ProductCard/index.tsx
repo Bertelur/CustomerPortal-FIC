@@ -2,7 +2,12 @@ import { useId, useState, useMemo } from "react";
 import type { ProductCardProps } from "./ProductProps.types";
 import { Button } from "../../Atoms/Button";
 import { Card, CardContent, CardFooter } from "../../Atoms/Card/card";
-import { Loader2, Heart, ShoppingCartIcon, AlertTriangleIcon } from "lucide-react";
+import {
+  Loader2,
+  Heart,
+  ShoppingCartIcon,
+  AlertTriangleIcon,
+} from "lucide-react";
 import { toast } from "sonner";
 
 export default function ProductCard({
@@ -15,10 +20,7 @@ export default function ProductCard({
   const [isAdding, setIsAdding] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
 
-  const isOutOfStock = useMemo(
-    () => product.stock === 0,
-    [product.stock],
-  );
+  const isOutOfStock = useMemo(() => product.stock === 0, [product.stock]);
 
   const handleAdd = async () => {
     if (!onAddToCart || isAdding || isOutOfStock) return;
@@ -31,7 +33,7 @@ export default function ProductCard({
       toast.success("Berhasil ditambahkan ke keranjang", {
         icon: <ShoppingCartIcon className="size-4" />,
       });
-    } catch (error) {
+    } catch {
       toast.error("Gagal menambahkan ke keranjang", {
         icon: <AlertTriangleIcon className="size-4" />,
         action: {
@@ -45,7 +47,6 @@ export default function ProductCard({
       setIsAdding(false);
     }
   };
-
 
   const handleWishlist = (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -66,10 +67,9 @@ export default function ProductCard({
         {/* Stock Badge */}
         <div className="absolute top-2 left-2">
           <span
-            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${isOutOfStock
-              ? "bg-red-500 text-white"
-              : "bg-green-500 text-white"
-              }`}
+            className={`inline-flex items-center rounded-full px-2 py-1 text-xs font-semibold ${
+              isOutOfStock ? "bg-red-500 text-white" : "bg-green-500 text-white"
+            }`}
           >
             {isOutOfStock ? "Habis" : "Tersedia"}
           </span>
@@ -83,8 +83,9 @@ export default function ProductCard({
           aria-label="Tambahkan ke wishlist"
         >
           <Heart
-            className={`h-4 w-4 transition-colors ${isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"
-              }`}
+            className={`h-4 w-4 transition-colors ${
+              isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"
+            }`}
           />
         </Button>
 
@@ -117,8 +118,9 @@ export default function ProductCard({
             </div>
             <div className="min-w-0">
               <p
-                className={`text-xs ${isOutOfStock ? "text-red-500" : "text-gray-500"
-                  }`}
+                className={`text-xs ${
+                  isOutOfStock ? "text-red-500" : "text-gray-500"
+                }`}
                 aria-live="polite"
               >
                 Stok: {product.stock}Kg
@@ -136,9 +138,7 @@ export default function ProductCard({
           type="button"
           onClick={handleAdd}
           className="w-full"
-          disabled={
-            isAdding || isOutOfStock || product.status === "inactive"
-          }
+          disabled={isAdding || isOutOfStock || product.status === "inactive"}
           aria-busy={isAdding}
           aria-describedby={statusId}
           aria-label={`Tambah ${product.name} ke keranjang`}
