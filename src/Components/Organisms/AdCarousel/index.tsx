@@ -38,7 +38,7 @@ export default function AdCarousel() {
 
   const handleSlideClick = (ad: AdSlide) => {
     if (ad.link && ad.link !== "#") {
-      window.location.href = ad.link;
+      window.location.assign(ad.link);
     }
   };
 

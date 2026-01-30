@@ -49,16 +49,29 @@ const Home = () => {
     }
 
     try {
+      const category = product.category?.trim().toLowerCase();
+      const unitName = product.unit?.name?.trim().toLowerCase();
+
+      let quantity = 1;
+
+      if (category === "telur" && unitName === "kg") {
+        quantity = 45;
+      } else if (category === "telur" && unitName === "ikat") {
+        quantity = 3;
+      }
       await axios.post(
         `${import.meta.env.VITE_API_URL}/api/v1/cart/items`,
-        { productId: product.id, quantity: 45 },
+        { productId: product.id, quantity },
         { withCredentials: true },
       );
+
       await refreshCart();
     } catch (error: unknown) {
       if (axios.isAxiosError(error)) {
         console.log("FAILED STATUS:", error.response?.status);
         console.log("FAILED DATA:", error.response?.data);
+      } else {
+        console.log("UNKNOWN ERROR:", error);
       }
     }
   };
