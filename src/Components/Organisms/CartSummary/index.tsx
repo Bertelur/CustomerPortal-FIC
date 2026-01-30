@@ -133,6 +133,17 @@ Terima kasih.
     window.open(whatsappUrl, "_blank");
   };
 
+  const USE_MANUAL_PAYMENT = true;
+
+  const handlePayment = async () => {
+    if (USE_MANUAL_PAYMENT) {
+      redirectToWhatsApp();
+      return;
+    }
+
+    await handleCheckout();
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl p-6 border border-gray-200 h-fit lg:sticky top-20 z-10 ">
@@ -231,7 +242,7 @@ Terima kasih.
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => {
                 setShowPaymentPopup(false);
-                redirectToWhatsApp();
+                handlePayment();
               }}
             >
               Saya Sudah Transfer
