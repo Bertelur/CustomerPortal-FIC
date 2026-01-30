@@ -32,7 +32,8 @@ export default function CartItem({
           <div>
             <p className="font-medium">{name}</p>
             <p className="text-sm text-gray-500">
-              Rp {price.toLocaleString("id-ID")}
+              Rp {price.toLocaleString("id-ID")} /
+              <span className="capitalize">{product?.unit.name}</span>
             </p>
           </div>
         )}
@@ -42,6 +43,7 @@ export default function CartItem({
         <QuantityControl
           stock={product?.stock}
           value={quantity}
+          unit={product?.unit.name}
           onChange={(val) => onQuantityChange(productId, val)}
         />
         <Button onClick={onRemove} className=" bg-red-600 hover:bg-red-700">

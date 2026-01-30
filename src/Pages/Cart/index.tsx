@@ -7,6 +7,7 @@ import CartList from "../../Components/Organisms/CartList";
 import { Truck } from "lucide-react";
 import ShippingAddressForm from "../../Components/Organisms/ShippingAddress";
 import { useCartStore } from "../../Store/CartStore";
+import { useProductStore } from "../../Store/ProductStore";
 
 export type AddressResult = {
   label: string;
@@ -28,17 +29,41 @@ export default function CartPage() {
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
-
+  const products = useProductStore((state) => state.products);
   const setCartInStore = useCartStore((state) => state.setCart);
   const setCartItemsInStore = useCartStore((state) => state.setCartItems);
 
-  // ================= DERIVED STATE =================
-  const totalTelur = useMemo(() => {
-    if (!cart) return 0;
-    return cart.items
-      .filter((item) => item.name === "Telur Ayam Kampung")
-      .reduce((sum, item) => sum + item.quantity, 0);
-  }, [cart]);
+  const KG_PER_IKAT = 15;
+
+  const telurSummary = useMemo(() => {
+    let kg = 0;
+    let ikat = 0;
+
+    if (!cart || !products.length) {
+      return { kg: 0, ikat: 0, totalKg: 0 };
+    }
+
+    for (const item of cart.items) {
+      const product = products.find((p) => p.id === item.productId);
+
+      if (!product) continue;
+      if (product.category?.trim().toLowerCase() !== "telur") continue;
+
+      const unit = product.unit?.name?.trim().toLowerCase();
+
+      if (unit === "kg") kg += item.quantity;
+      if (unit === "ikat") ikat += item.quantity;
+    }
+
+    return {
+      kg,
+      ikat,
+      totalKg: kg + ikat * KG_PER_IKAT,
+    };
+  }, [cart, products]);
+
+  const isDeliveryBlocked =
+    telurSummary.totalKg >= 45 && telurSummary.totalKg < 1500;
 
   // ================= FETCH CART =================
   useEffect(() => {
@@ -88,23 +113,23 @@ export default function CartPage() {
       calculateShippingFromCoord(
         shippingAddress.lat,
         shippingAddress.lon,
-        totalTelur,
+        telurSummary.totalKg,
       );
     }, 500);
 
     return () => clearTimeout(t);
-  }, [shippingAddress, deliveryMethod, totalTelur]);
+  }, [shippingAddress, deliveryMethod, telurSummary.totalKg]);
 
   // ================= PICKUP RULE =================
   useEffect(() => {
     if (
-      totalTelur >= 45 &&
-      totalTelur <= 1500 &&
+      telurSummary.totalKg >= 45 &&
+      telurSummary.totalKg < 1500 &&
       deliveryMethod === "delivery"
     ) {
       setDeliveryMethod("pickup");
     }
-  }, [totalTelur, deliveryMethod]);
+  }, [telurSummary.totalKg, deliveryMethod]);
 
   // ================= HITUNG ONGKIR =================
   const calculateShippingFromCoord = async (
@@ -114,7 +139,7 @@ export default function CartPage() {
   ) => {
     try {
       // 👉 FREE SHIPPING RULE
-      if (telurQty >= 100) {
+      if (telurQty >= 1500) {
         setShipping(0);
         setDistance(0);
         setError("");
@@ -257,6 +282,7 @@ export default function CartPage() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
+                    disabled={isDeliveryBlocked}
                     checked={deliveryMethod === "delivery"}
                     onChange={() => setDeliveryMethod("delivery")}
                   />

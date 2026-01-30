@@ -1,11 +1,11 @@
 export type UnitType = {
-  unit: string;
-  unitValue: number;
-  price: number;
+  id: string;
+  name: string;
 };
 
 export type ProductProps = {
   id: string;
+  min: number;
   name: string;
   imageType?: string;
   imageUrl?: string;
@@ -13,6 +13,7 @@ export type ProductProps = {
   price: number;
   sku: string;
   description: string;
+  unit: UnitType;
   category: string;
   status: string;
 };

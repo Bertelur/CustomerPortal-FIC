@@ -2,13 +2,15 @@ import type { QuantityControlProps } from "./QuantityControl.types";
 export default function QuantityControl({
   value,
   stock,
+  unit,
+  min,
   onChange,
 }: QuantityControlProps) {
   return (
-    <div className="flex items-center gap-2">
+    <div className="flex items-center gap-2 capitalize">
       <input
         type="number"
-        min={45}
+        min={min ?? 1}
         max={stock}
         value={value}
         onChange={(e) => {
@@ -19,7 +21,7 @@ export default function QuantityControl({
         }}
         className="w-10 text-center border rounded"
       />
-      /Kg
+      {unit}
     </div>
   );
 }

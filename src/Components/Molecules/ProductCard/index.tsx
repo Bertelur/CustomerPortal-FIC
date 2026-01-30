@@ -114,16 +114,18 @@ export default function ProductCard({
               >
                 Rp {product.price.toLocaleString("id-ID")}
               </p>
-              <p className="text-xs text-gray-500">/Kg</p>
+              <p className="text-xs text-gray-500 capitalize">
+                / {product.unit.name}
+              </p>
             </div>
             <div className="min-w-0">
               <p
-                className={`text-xs ${
+                className={`text-xs capitalize ${
                   isOutOfStock ? "text-red-500" : "text-gray-500"
                 }`}
                 aria-live="polite"
               >
-                Stok: {product.stock}Kg
+                Stok: {product.stock} {product.unit.name}
               </p>
             </div>
           </div>
