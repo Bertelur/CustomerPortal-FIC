@@ -110,6 +110,29 @@ export default function CartSummary({
     }
   };
 
+  const redirectToWhatsApp = () => {
+    const phoneNumber = "6281234567890"; // pakai format internasional (62)
+    const total = (subtotal + shipping).toLocaleString("id-ID");
+
+    const message = `
+Halo Admin
+
+Saya sudah melakukan transfer pembayaran dengan detail:
+- Total: Rp ${total}
+- Metode: Transfer Bank BCA
+
+Berikut saya lampirkan bukti transfernya
+
+Terima kasih.
+  `.trim();
+
+    const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+      message,
+    )}`;
+
+    window.open(whatsappUrl, "_blank");
+  };
+
   return (
     <>
       <div className="bg-white rounded-xl p-6 border border-gray-200 h-fit lg:sticky top-20 z-10 ">
@@ -179,7 +202,7 @@ export default function CartSummary({
 
               <div className="flex justify-between">
                 <span className="text-gray-500">Atas Nama</span>
-                <span className="font-medium">PT Contoh Jaya</span>
+                <span className="font-medium">PT Fahmi Jaya Internasional</span>
               </div>
 
               <div className="flex justify-between">
@@ -208,7 +231,7 @@ export default function CartSummary({
               className="bg-blue-600 hover:bg-blue-700 text-white"
               onClick={() => {
                 setShowPaymentPopup(false);
-                handleCheckout();
+                redirectToWhatsApp();
               }}
             >
               Saya Sudah Transfer
