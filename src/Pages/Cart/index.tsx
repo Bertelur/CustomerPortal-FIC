@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import CartSummary from "../../Components/Organisms/CartSummary";
 import EmptyCart from "../../Components/Organisms/EmptyCart";
 import type { Cart } from "../../Components/Organisms/CartList/CartList.types";
@@ -6,11 +6,14 @@ import axios from "axios";
 import CartList from "../../Components/Organisms/CartList";
 import { Truck } from "lucide-react";
 import ShippingAddressForm from "../../Components/Organisms/ShippingAddress";
+import { useCartStore } from "../../Store/CartStore";
+import { useProductStore } from "../../Store/ProductStore";
 
 export type AddressResult = {
   label: string;
   lat: number;
   lon: number;
+  additionalNotes?: string;
 };
 
 export default function CartPage() {
@@ -20,19 +23,57 @@ export default function CartPage() {
   const [shippingAddress, setShippingAddress] = useState<AddressResult | null>(
     null,
   );
+  const [additionalNotes, setAdditionalNotes] = useState("");
   const [error, setError] = useState("");
   const [distance, setDistance] = useState(0);
   const [deliveryMethod, setDeliveryMethod] = useState<"pickup" | "delivery">(
     "pickup",
   );
-  // ================= FETCH DATA =================
+  const products = useProductStore((state) => state.products);
+  const setCartInStore = useCartStore((state) => state.setCart);
+  const setCartItemsInStore = useCartStore((state) => state.setCartItems);
+
+  const KG_PER_IKAT = 15;
+
+  const telurSummary = useMemo(() => {
+    let kg = 0;
+    let ikat = 0;
+
+    if (!cart || !products.length) {
+      return { kg: 0, ikat: 0, totalKg: 0 };
+    }
+
+    for (const item of cart.items) {
+      const product = products.find((p) => p.id === item.productId);
+
+      if (!product) continue;
+      if (product.category?.trim().toLowerCase() !== "telur") continue;
+
+      const unit = product.unit?.name?.trim().toLowerCase();
+
+      if (unit === "kg") kg += item.quantity;
+      if (unit === "ikat") ikat += item.quantity;
+    }
+
+    return {
+      kg,
+      ikat,
+      totalKg: kg + ikat * KG_PER_IKAT,
+    };
+  }, [cart, products]);
+
+  const isDeliveryBlocked =
+    telurSummary.totalKg >= 45 && telurSummary.totalKg < 1500;
+
+  // ================= FETCH CART =================
   useEffect(() => {
     const userStr = localStorage.getItem("user");
     const user = userStr ? JSON.parse(userStr) : null;
 
     if (user?.address) {
       setShippingAddress(user.address);
-      setDeliveryMethod("delivery"); // opsional: langsung set ke delivery
+      setAdditionalNotes(user.address.additionalNotes || "");
+      setDeliveryMethod("delivery");
     }
 
     const fetchCart = async () => {
@@ -42,6 +83,7 @@ export default function CartPage() {
           { withCredentials: true },
         );
         setCart(res.data.data);
+        setCartInStore(res.data.data);
       } catch (error) {
         console.error("Failed to fetch cart:", error);
       } finally {
@@ -50,35 +92,62 @@ export default function CartPage() {
     };
 
     fetchCart();
-  }, []);
+  }, [setCartInStore]);
 
+  // ================= PICKUP RESET =================
   useEffect(() => {
     if (deliveryMethod === "pickup") {
       setShipping(0);
       setDistance(0);
       setShippingAddress(null);
+      setAdditionalNotes("");
       setError("");
     }
   }, [deliveryMethod]);
 
-  // ================= HITUNG ONGKIR SAAT PILIH ALAMAT =================
+  // ================= ONGKIR TRIGGER =================
   useEffect(() => {
     if (!shippingAddress || deliveryMethod !== "delivery") return;
 
     const t = setTimeout(() => {
-      calculateShippingFromCoord(shippingAddress.lat, shippingAddress.lon);
+      calculateShippingFromCoord(
+        shippingAddress.lat,
+        shippingAddress.lon,
+        telurSummary.totalKg,
+      );
     }, 500);
 
     return () => clearTimeout(t);
-  }, [shippingAddress, deliveryMethod]);
+  }, [shippingAddress, deliveryMethod, telurSummary.totalKg]);
+
+  // ================= PICKUP RULE =================
+  useEffect(() => {
+    if (
+      telurSummary.totalKg >= 45 &&
+      telurSummary.totalKg < 1500 &&
+      deliveryMethod === "delivery"
+    ) {
+      setDeliveryMethod("pickup");
+    }
+  }, [telurSummary.totalKg, deliveryMethod]);
 
   // ================= HITUNG ONGKIR =================
-  const calculateShippingFromCoord = async (lat: number, lon: number) => {
+  const calculateShippingFromCoord = async (
+    lat: number,
+    lon: number,
+    telurQty: number,
+  ) => {
     try {
+      // 👉 FREE SHIPPING RULE
+      if (telurQty >= 1500) {
+        setShipping(0);
+        setDistance(0);
+        setError("");
+        return;
+      }
+
       const store = { lat: -6.901499, lon: 107.647224 };
-
       const url = `https://router.project-osrm.org/route/v1/driving/${store.lon},${store.lat};${lon},${lat}?overview=false`;
-
       const res = await axios.get(url);
 
       if (!res.data.routes?.length) throw new Error("Route tidak ditemukan");
@@ -113,16 +182,20 @@ export default function CartPage() {
 
       setCart((prev) => {
         if (!prev) return prev;
+
         const newItems = prev.items.filter(
           (item) => item.productId !== productId,
         );
 
-        return {
+        const updatedCart: Cart = {
           ...prev,
           items: newItems,
           totalQuantity: newItems.reduce((a, b) => a + b.quantity, 0),
           totalAmount: newItems.reduce((a, b) => a + b.price * b.quantity, 0),
         };
+
+        setCartItemsInStore(updatedCart.items);
+        return updatedCart;
       });
     } catch (error) {
       console.error("Failed to remove item:", error);
@@ -144,7 +217,7 @@ export default function CartPage() {
           item.productId === productId ? { ...item, quantity } : item,
         );
 
-        return {
+        const updatedCart: Cart = {
           ...prev,
           items: updatedItems,
           totalQuantity: updatedItems.reduce((a, b) => a + b.quantity, 0),
@@ -153,11 +226,15 @@ export default function CartPage() {
             0,
           ),
         };
+
+        setCartItemsInStore(updatedCart.items);
+        return updatedCart;
       });
     } catch (error) {
       console.error("Failed to update quantity", error);
     }
   };
+
   const handleAddressChange = (value: AddressResult) => {
     setShippingAddress(value);
 
@@ -165,24 +242,28 @@ export default function CartPage() {
     if (!userStr) return;
 
     const user = JSON.parse(userStr);
-
-    const updatedUser = {
-      ...user,
-      address: value, // simpan full object (label, lat, lon)
-    };
-
+    const updatedUser = { ...user, address: value };
     localStorage.setItem("user", JSON.stringify(updatedUser));
+  };
+
+  const handleAdditionalNotesChange = (notes: string) => {
+    setAdditionalNotes(notes);
+    if (shippingAddress) {
+      const updatedAddress = { ...shippingAddress, additionalNotes: notes };
+      setShippingAddress(updatedAddress);
+      handleAddressChange(updatedAddress);
+    }
   };
 
   if (loading) return <p className="p-8">Loading...</p>;
   if (!cart || cart.items.length === 0) return <EmptyCart />;
 
   return (
-    <div className="bg-gray-50 p-2 lg:p-8">
+    <div className="p-2 lg:p-8">
       <div className="mx-auto grid max-w-7xl grid-cols-1 gap-6 lg:grid-cols-3">
         <div className="sm:col-span-2 space-y-8">
-          <div className="lg:sticky top-14 space-y-8 bg-white">
-            <div className="bg-white rounded-2xl shadow-xl p-6 space-y-4">
+          <div className="lg:sticky top-14 space-y-4 bg-white">
+            <div className="rounded-2xl p-6 space-y-4 border">
               <div className="flex items-center gap-2">
                 <Truck className="w-5 h-5 text-orange-600" />
                 <h2 className="text-xl font-bold">Metode Pengambilan</h2>
@@ -201,6 +282,7 @@ export default function CartPage() {
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input
                     type="radio"
+                    disabled={isDeliveryBlocked}
                     checked={deliveryMethod === "delivery"}
                     onChange={() => setDeliveryMethod("delivery")}
                   />
@@ -215,6 +297,8 @@ export default function CartPage() {
                 address={shippingAddress}
                 onChange={handleAddressChange}
                 distance={distance}
+                additionalNotes={additionalNotes}
+                onAdditionalNotesChange={handleAdditionalNotesChange}
               />
             )}
           </div>
@@ -230,6 +314,13 @@ export default function CartPage() {
           subtotal={cart.totalAmount}
           shipping={shipping}
           cart={cart.items}
+          shippingAddress={
+            deliveryMethod === "delivery" ? shippingAddress : null
+          }
+          additionalNotes={
+            deliveryMethod === "delivery" ? additionalNotes : undefined
+          }
+          deliveryMethod={deliveryMethod}
         />
       </div>
     </div>

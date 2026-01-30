@@ -8,7 +8,7 @@ export default function CartList({
   onQuantityChange,
 }: CartListProps) {
   return (
-    <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 shadow-xl">
+    <div className="max-w-7xl mx-auto bg-white rounded-xl p-6 border border-gray-200">
       <div className="text-xl font-bold mb-4 flex items-center gap-2">
         <IoCart size={28} className="text-orange-600" />
         <p>Cart</p>

@@ -2,6 +2,7 @@ import { TbTrash } from "react-icons/tb";
 import { Button } from "../../Atoms/Button";
 import QuantityControl from "../QuantityControl";
 import type { CartItemProps } from "./CartItem.types";
+import { useProductStore } from "../../../Store/ProductStore";
 
 export default function CartItem({
   productId,
@@ -12,10 +13,14 @@ export default function CartItem({
   onRemove,
   onQuantityChange,
 }: CartItemProps) {
+  const product = useProductStore((state) =>
+    state.products.find((p) => p.id === productId),
+  );
+
   return (
     <div
       key={productId}
-      className="flex flex-col md:flex-row md:justify-between p-4 border border-gray-200 rounded-xl transition-colors"
+      className="flex flex-col md:flex-row md:justify-between transition-colors"
     >
       <div className="flex items-center gap-4">
         <img
@@ -27,7 +32,8 @@ export default function CartItem({
           <div>
             <p className="font-medium">{name}</p>
             <p className="text-sm text-gray-500">
-              Rp {price.toLocaleString("id-ID")}
+              Rp {price.toLocaleString("id-ID")} /
+              <span className="capitalize">{product?.unit.name}</span>
             </p>
           </div>
         )}
@@ -35,8 +41,9 @@ export default function CartItem({
 
       <div className="flex items-center gap-4">
         <QuantityControl
-          stock={100}
+          stock={product?.stock}
           value={quantity}
+          unit={product?.unit.name}
           onChange={(val) => onQuantityChange(productId, val)}
         />
         <Button onClick={onRemove} className=" bg-red-600 hover:bg-red-700">

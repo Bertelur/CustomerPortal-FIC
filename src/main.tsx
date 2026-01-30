@@ -8,6 +8,7 @@ import { registerSW } from "virtual:pwa-register";
 import { initGA } from "./Lib/ga";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./Lib/react-query";
+import { Toaster } from "./Components/Atoms/Toast/sonner";
 
 const ENABLE_ANALYTICS = import.meta.env.VITE_ENABLE_ANALYTICS === "true";
 const GA_MEASUREMENT_ID = import.meta.env.VITE_GA_MEASUREMENT_ID as
@@ -29,6 +30,7 @@ createRoot(document.getElementById("root")!).render(
       <BrowserRouter>
         <App />
         <Analytics />
+        <Toaster />
       </BrowserRouter>
     </QueryClientProvider>
   </StrictMode>,
